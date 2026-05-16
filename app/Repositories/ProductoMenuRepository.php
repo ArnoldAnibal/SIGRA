@@ -6,25 +6,25 @@ use App\Models\ProductoMenu;
 
 class ProductoMenuRepository
 {
-    // Obtener todos los productos junto con su categoria
+    // Obtener todos los productos
     public function getAll()
     {
-        return ProductoMenu::with('categoria')->get();
+        return ProductoMenu::all();
     }
 
-    // Buscar un producto por ID
+    // Obtener producto por ID
     public function findById(int $id)
     {
-        return ProductoMenu::with('categoria')->find($id);
+        return ProductoMenu::find($id);
     }
 
-    // Crear un nuevo producto
+    // Crear producto
     public function create(array $data)
     {
         return ProductoMenu::create($data);
     }
 
-    // Actualizar un producto existente
+    // Actualizar producto
     public function update(ProductoMenu $producto, array $data)
     {
         $producto->update($data);
@@ -32,7 +32,7 @@ class ProductoMenuRepository
         return $producto;
     }
 
-    // Eliminar un producto
+    // Eliminar producto
     public function delete(ProductoMenu $producto)
     {
         return $producto->delete();

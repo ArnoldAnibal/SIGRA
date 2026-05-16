@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductoMenuRequest;
 use App\Http\Requests\UpdateProductoMenuRequest;
 use App\Http\Resources\ProductoMenuResource;
-use App\Models\ProductoMenu;
+use Illuminate\Http\Request;
 use App\Services\ProductoMenuService;
 
 class ProductoMenuController extends Controller
@@ -21,12 +21,12 @@ class ProductoMenuController extends Controller
     // Obtener todos los productos
     public function index()
     {
-        $productos = $this->service->getAll();
-
-        return ProductoMenuResource::collection($productos);
+        return response()->json([
+            'data' => $this->service->getAll()
+        ]);
     }
 
-    // Crear un nuevo producto
+    // Crear producto
     public function store(StoreProductoMenuRequest $request)
     {
         $producto = $this->service->create($request->validated());
@@ -34,7 +34,7 @@ class ProductoMenuController extends Controller
         return new ProductoMenuResource($producto);
     }
 
-    // Obtener un producto por ID
+    // Obtener producto por ID
     public function show($id)
     {
         $producto = $this->service->getById($id);
@@ -48,7 +48,7 @@ class ProductoMenuController extends Controller
         return new ProductoMenuResource($producto);
     }
 
-    // Actualizar un producto
+    // Actualizar producto
     public function update(UpdateProductoMenuRequest $request, $id)
     {
         $producto = $this->service->getById($id);
@@ -67,7 +67,7 @@ class ProductoMenuController extends Controller
         return new ProductoMenuResource($productoActualizado);
     }
 
-    // Eliminar un producto
+    // Eliminar producto
     public function destroy($id)
     {
         $producto = $this->service->getById($id);

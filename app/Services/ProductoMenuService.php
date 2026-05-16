@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\ProductoMenuRepository;
+use App\Http\Resources\ProductoMenuResource;
 
 class ProductoMenuService
 {
@@ -16,10 +17,12 @@ class ProductoMenuService
     // Obtener todos los productos
     public function getAll()
     {
-        return $this->repository->getAll();
+        return ProductoMenuResource::collection(
+            $this->repository->getAll()
+        );
     }
 
-    // Obtener un producto por ID
+    // Obtener producto por ID
     public function getById(int $id)
     {
         return $this->repository->findById($id);
