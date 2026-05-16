@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+// Form Request para validar los datos de entrada al crear una nueva categoría de menú. Este Form Request asegura que el campo 'nombre' sea obligatorio, sea una cadena de texto, tenga un máximo de 100 caracteres y sea único en la tabla 'categoria_menu' para evitar duplicados.
 class StoreCategoriaMenuRequest extends FormRequest
 {
     /**

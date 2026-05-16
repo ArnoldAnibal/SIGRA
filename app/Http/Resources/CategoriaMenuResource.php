@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+// Recurso de API para formatear la salida de las categorías de menú. Este recurso define cómo se deben presentar los datos de una categoría de menú cuando se devuelven en las respuestas JSON de la API. Incluye los campos 'id_categoria', 'nombre', 'created_at' y 'updated_at' para proporcionar información completa sobre cada categoría de menú.
 class CategoriaMenuResource extends JsonResource
 {
     /**
