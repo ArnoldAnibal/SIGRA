@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-// Importamos el controlador CategoriaMenuController para poder utilizarlo en las rutas de la API relacionadas con las categorías de menú.
+// Importamos el controlador CategoriaMenuController y ProductoMenuController para poder utilizarlos en las rutas de la API relacionadas con las categorías y productos de menú.
 use App\Http\Controllers\Api\CategoriaMenuController;
+use App\Http\Controllers\Api\ProductoMenuController;
 
 // Definimos un grupo de rutas con el prefijo 'v1' para versionar nuestra API. Dentro de este grupo, registramos un recurso API para las categorías de menú utilizando el controlador CategoriaMenuController, lo que automáticamente genera las rutas para las operaciones CRUD (index, show, store, update, destroy) relacionadas con las categorías de menú.
 Route::prefix('v1')->group(function () {
@@ -22,6 +23,11 @@ Route::prefix('v1')->group(function () {
     Route::apiResource(
         'categorias-menu',
         CategoriaMenuController::class
+    );
+
+    Route::apiResource(
+        'productos-menu',
+        ProductoMenuController::class
     );
 
 });
