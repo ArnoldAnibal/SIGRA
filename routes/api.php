@@ -14,6 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use App\Http\Controllers\Api\CategoriaMenuController;
+
+Route::prefix('v1')->group(function () {
+
+    Route::apiResource(
+        'categorias-menu',
+        CategoriaMenuController::class
+    );
+
+});
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
