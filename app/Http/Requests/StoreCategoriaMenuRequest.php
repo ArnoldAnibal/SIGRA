@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreCategoriaMenuRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the user is authorized to make this request. En este caso, se permite que cualquier usuario pueda realizar esta solicitud, ya que el método devuelve true. En un escenario real, podrías implementar lógica de autorización más compleja para restringir el acceso a ciertos usuarios o roles.
      */
     public function authorize(): bool
     {

@@ -28,7 +28,7 @@ app/
 * Repositories/
 * Services/
 
-## Modulo Implementado
+## Modulos Implementados
 
 ### Categoria Menu CRUD
 
@@ -72,51 +72,191 @@ DELETE `/api/v1/categorias-menu/{id}`
 
 Borra una categoría permanentemente.
 
+### Producto Menu CRUD
+
+CRUD completo implementado para las operaciones de la tabla `producto_menu`.
+
+### Endpoints
+
+GET `/api/v1/productos-menu`
+
+Leer todos los productos.
+
+GET `/api/v1/productos-menu/{id}`
+
+Retorna un producto en base a su ID.
+
+POST `/api/v1/productos-menu`
+
+Crear un nuevo producto.
+
+Ejemplo de body:
+
+```json
+{
+    "nombre": "Pizza Pepperoni",
+    "descripcion": "Pizza grande con pepperoni",
+    "precio": 85.50,
+    "id_categoria": 1,
+    "disponible": 1
+}
+```
+
+PUT `/api/v1/productos-menu/{id}`
+
+Actualiza un producto.
+
+Ejemplo de body:
+
+```json
+{
+    "nombre": "Pizza Suprema",
+    "descripcion": "Pizza familiar especial",
+    "precio": 95.00,
+    "id_categoria": 1,
+    "disponible": 1
+}
+```
+
+DELETE `/api/v1/productos-menu/{id}`
+
+Borra un producto permanentemente.
+
+### Mesa CRUD
+
+CRUD completo implementado para las operaciones de la tabla `mesa`.
+
+El modulo usa Soft Deletes mediante el campo `deleted_at`.
+
+### Endpoints
+
+GET `/api/v1/mesas`
+
+Leer todas las mesas.
+
+GET `/api/v1/mesas/{id}`
+
+Retorna una mesa en base a su ID.
+
+POST `/api/v1/mesas`
+
+Crear una nueva mesa.
+
+Ejemplo de body:
+
+```json
+{
+    "numero_mesa": 10,
+    "capacidad": 4,
+    "estado": "Libre"
+}
+```
+
+PUT `/api/v1/mesas/{id}`
+
+Actualiza una mesa.
+
+Ejemplo de body:
+
+```json
+{
+    "numero_mesa": 12,
+    "capacidad": 6,
+    "estado": "Reservada"
+}
+```
+
+DELETE `/api/v1/mesas/{id}`
+
+Realiza un borrado lógico usando Soft Deletes.
+
 ## Componentes de arquitectura
 
-### Model
+### Models
 
-`CategoriaMenu.php`
+* `CategoriaMenu.php`
+* `ProductoMenu.php`
+* `Mesa.php`
 
-Representa la tabla `categoria_menu` usando Eloquent ORM.
+Representan las tablas usando Eloquent ORM.
 
-### Controller
+### Controllers
 
-`CategoriaMenuController.php`
+* `CategoriaMenuController.php`
+* `ProductoMenuController.php`
+* `MesaController.php`
 
-Maneja las peticiones y respuestas HTTP.
+Manejan las peticiones y respuestas HTTP.
 
-### Service
+### Services
 
-`CategoriaMenuService.php`
+* `CategoriaMenuService.php`
+* `ProductoMenuService.php`
+* `MesaService.php`
 
-Contiene la lógica de negocio.
+Contienen la lógica de negocio.
 
-### Repository
+### Repositories
 
-`CategoriaMenuRepository.php`
+* `CategoriaMenuRepository.php`
+* `ProductoMenuRepository.php`
+* `MesaRepository.php`
 
-Maneja las operaciones de la base de datos.
+Manejan las operaciones de la base de datos.
 
 ### Request Validation
+
+Categoria Menu:
 
 * `StoreCategoriaMenuRequest.php`
 * `UpdateCategoriaMenuRequest.php`
 
-Responsable de validar información entrante solicitada.
+Producto Menu:
 
-### Resource
+* `StoreProductoMenuRequest.php`
+* `UpdateProductoMenuRequest.php`
 
-`CategoriaMenuResource.php`
+Mesa:
 
-Crea respuestas API JSON.
+* `StoreMesaRequest.php`
+* `UpdateMesaRequest.php`
+
+Responsables de validar información entrante solicitada.
+
+### Resources
+
+* `CategoriaMenuResource.php`
+* `ProductoMenuResource.php`
+* `MesaResource.php`
+
+Crean respuestas API JSON.
 
 ## Database Notes
+
+### Categoria Menu
 
 Configuración personalizada de tabla:
 
 * Table: `categoria_menu`
 * Primary key: `id_categoria`
+
+### Producto Menu
+
+Configuración personalizada de tabla:
+
+* Table: `producto_menu`
+* Primary key: `id_producto`
+
+### Mesa
+
+Configuración personalizada de tabla:
+
+* Table: `mesa`
+* Primary key: `id_mesa`
+
+Soft Deletes habilitado:
+
+* deleted_at
 
 Timestamps enabled:
 
@@ -135,6 +275,14 @@ Ejemplo:
 
 ```text
 /api/v1/categorias-menu
+```
+
+```text
+/api/v1/productos-menu
+```
+
+```text
+/api/v1/mesas
 ```
 
 ## Correr el proyecto

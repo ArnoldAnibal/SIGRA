@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+// Servicio para manejar la lógica de negocio relacionada con la entidad ProductoMenu. Este servicio utiliza el repositorio ProductoMenuRepository para interactuar con la base de datos y realizar operaciones CRUD. El servicio se encarga de procesar los datos y aplicar cualquier lógica de negocio necesaria antes de devolver los resultados a los controladores o recursos que lo consumen.
+
 use App\Repositories\ProductoMenuRepository;
 use App\Http\Resources\ProductoMenuResource;
 

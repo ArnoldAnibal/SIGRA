@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+// Repositorio para manejar la lógica de acceso a datos de la entidad ProductoMenu, interactua directamente con la base de datos para realizar operaciones CRUD. Este repositorio es utilizado por el servicio ProductoMenuService para abstraer la lógica de negocio de la lógica de acceso a datos.
+
 use App\Models\ProductoMenu;
 
 class ProductoMenuRepository
