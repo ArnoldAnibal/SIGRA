@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoriaMenuController;
 use App\Http\Controllers\Api\ProductoMenuController;
 use App\Http\Controllers\Api\MesaController;
+use App\Http\Controllers\Api\ClienteController;
+use App\Http\Controllers\Api\EmpleadoController;
+use App\Http\Controllers\Api\PlanillaController;
+use App\Http\Controllers\Api\PedidoController;
+use App\Http\Controllers\Api\FacturaElectronicaController;
+use App\Http\Controllers\Api\DetallePedidoController;
 
 // Definimos un grupo de rutas con el prefijo 'v1' para versionar nuestra API. Dentro de este grupo, registramos un recurso API para las categorías de menú utilizando el controlador CategoriaMenuController, lo que automáticamente genera las rutas para las operaciones CRUD (index, show, store, update, destroy) relacionadas con las categorías de menú.
 Route::prefix('v1')->group(function () {
@@ -38,9 +44,45 @@ Route::prefix('v1')->group(function () {
         MesaController::class
     );
 
+    Route::apiResource(
+        'clientes',
+        ClienteController::class
+    );
+
+    Route::apiResource(
+        'empleados',
+        EmpleadoController::class
+    );
+
+    Route::apiResource(
+        'planillas',
+        PlanillaController::class
+    );
+
+    Route::apiResource(
+        'pedidos',
+        PedidoController::class
+    );
+
+    Route::apiResource(
+        'facturas-electronicas',
+        FacturaElectronicaController::class
+    );
+
+    Route::apiResource(
+        'detalles-pedido',
+        DetallePedidoController::class
+    );
+
 });
 
 // Ruta protegida por autenticación que devuelve los datos del usuario autenticado. Esta ruta utiliza el middleware 'auth:sanctum' para asegurar que solo los usuarios autenticados puedan acceder a ella. Si el usuario está autenticado, se devuelve su información en formato JSON.
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Ruta no encontrada. Verifique la URL de la API.'
+    ], 404);
 });

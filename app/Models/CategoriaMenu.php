@@ -3,19 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-// Modelo Eloquent para la tabla 'categoria_menu'. Este modelo representa las categorías de menú en la base de datos y define las propiedades y configuraciones necesarias para interactuar con la tabla. Incluye el nombre de la tabla, la clave primaria, el tipo de clave y los campos que se pueden asignar masivamente.
+// Modelo para la tabla "categoria_menu" con los campos "id_categoria" y "nombre". El campo "id_categoria" es la clave primaria y se autoincrementa. El modelo utiliza soft deletes para permitir la eliminación lógica de los registros. Además, se definen los campos que se pueden asignar masivamente a través de $fillable.
 class CategoriaMenu extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'categoria_menu';
 
     protected $primaryKey = 'id_categoria';
 
-    public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    // Campos que se pueden asignar masivamente al crear o actualizar una categoría de menú. En este caso, solo el campo 'nombre' es asignable masivamente.
+    // $fillable define los campos que se pueden asignar masivamente cuando se crea o actualiza un registro. Esto ayuda a proteger contra asignaciones masivas no deseadas.
     protected $fillable = [
         'nombre'
     ];
