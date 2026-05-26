@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-// Modelo para la tabla "factura_electronica" con los campos "id_factura", "uuid_sat", "fecha_emision", "nit_receptor", "monto_total", "estado" e "id_pedido". El campo "id_factura" es la clave primaria y se autoincrementa. El modelo utiliza soft deletes para permitir la eliminación lógica de los registros. Además, se definen los campos que se pueden asignar masivamente a través de $fillable.
+// Modelo para la tabla de factura electrónica, que representa las facturas emitidas por el sistema. Este modelo define los campos que se pueden asignar masivamente, las relaciones con otros modelos (como Pedido y Cliente), y utiliza SoftDeletes para permitir la eliminación lógica de las facturas sin perder los datos en la base de datos.
 class FacturaElectronica extends Model
 {
     use SoftDeletes;
@@ -20,6 +20,22 @@ class FacturaElectronica extends Model
         'nit_receptor',
         'monto_total',
         'estado',
+        'metodo_pago',
+        'estado_pago',
+        'detalle_pago',
+        'id_cliente_deudor',
         'id_pedido'
     ];
+
+    // Relación con pedido (una factura pertenece a un pedido)
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'id_pedido');
+    }
+
+    // Relación con cliente deudor (una factura puede pertenecer a un cliente deudor)
+    public function clienteDeudor()
+    {
+        return $this->belongsTo(Cliente::class, 'id_cliente_deudor');
+    }
 }

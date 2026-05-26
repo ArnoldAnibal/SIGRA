@@ -11,22 +11,26 @@ REST API desarrollado con Laravel 13 para la administración de un restaurante.
 * Composer
 * Laravel Eloquent ORM
 
+---
+
 ## Arquitectura Actual
 
-El proyecto sigue una arquitectura en capas usando las mejores practicas de laravel
+El proyecto sigue una arquitectura en capas usando las mejores practicas de Laravel.
 
 ### Estructura
 
+```text
 app/
+├── Http/
+│   ├── Controllers/
+│   ├── Requests/
+│   └── Resources/
+├── Models/
+├── Repositories/
+└── Services/
+```
 
-* Http/
-
-  * Controllers/
-  * Requests/
-  * Resources/
-* Models/
-* Repositories/
-* Services/
+---
 
 ## Modulos Implementados
 
@@ -148,7 +152,14 @@ Retorna una mesa en base a su ID.
 
 POST `/api/v1/mesas`
 
-Crear una nueva mesa. Las opciones de estado son "Libre", "Ocupada", "Reservada" o "Mantenimiento".
+Crear una nueva mesa.
+
+Opciones válidas para `estado`:
+
+* Libre
+* Ocupada
+* Reservada
+* Mantenimiento
 
 Ejemplo de body:
 
@@ -162,7 +173,7 @@ Ejemplo de body:
 
 PUT `/api/v1/mesas/{id}`
 
-Actualiza una mesa. Las opciones son 'Libre', 'Ocupada', 'Reservada', 'Mantenimiento'.
+Actualiza una mesa.
 
 Ejemplo de body:
 
@@ -251,7 +262,15 @@ Retorna un empleado en base a su ID.
 
 POST `/api/v1/empleados`
 
-Crear un nuevo empleado. Las opciones de rol son: "Administrador", "Mesero", "Cajero", "Recepcionista", y "Cocinero".
+Crear un nuevo empleado.
+
+Opciones válidas para `rol`:
+
+* Administrador
+* Mesero
+* Cajero
+* Recepcionista
+* Cocinero
 
 Ejemplo de body:
 
@@ -266,7 +285,7 @@ Ejemplo de body:
 
 PUT `/api/v1/empleados/{id}`
 
-Actualiza un empleado. Las opciones de rol son: "Administrador", "Mesero", "Cajero", "Recepcionista", y "Cocinero".
+Actualiza un empleado.
 
 Ejemplo de body:
 
@@ -361,16 +380,59 @@ POST `/api/v1/pedidos`
 
 Crear un nuevo pedido.
 
+Opciones válidas para `estado`:
+
+* Pendiente
+* Preparando
+* Listo
+* Entregado
+* Cancelado
+
+Opciones válidas para `tipo`:
+
+* Para Aca
+* Llevar
+* Delivery
+
+Opciones válidas para `metodo_pago`:
+
+* Efectivo
+* Tarjeta
+* Transferencia
+
+Notas importantes:
+
+* `detalle_pago` debe ser `null` cuando el método de pago sea `Efectivo`.
+* Para `Tarjeta`, se recomienda guardar el ID de transacción o últimos 4 dígitos.
+* Para `Transferencia`, se recomienda guardar el número o referencia de transferencia.
+
 Ejemplo de body:
 
 ```json
 {
     "estado": "Pendiente",
     "tipo": "Para Aca",
+    "metodo_pago": "Tarjeta",
+    "detalle_pago": "TXN-458921",
     "total": 150.00,
     "id_mesa": 2,
     "id_cliente": 1,
     "id_empleado": 1
+}
+```
+
+Ejemplo con efectivo:
+
+```json
+{
+    "estado": "Pendiente",
+    "tipo": "Llevar",
+    "metodo_pago": "Efectivo",
+    "detalle_pago": null,
+    "total": 85.00,
+    "id_mesa": null,
+    "id_cliente": 1,
+    "id_empleado": 3
 }
 ```
 
@@ -383,6 +445,8 @@ Ejemplo de body:
 ```json
 {
     "estado": "Preparando",
+    "metodo_pago": "Transferencia",
+    "detalle_pago": "REF-20260525-7788",
     "total": 175.00
 }
 ```
@@ -411,7 +475,12 @@ Retorna una factura electrónica en base a su ID.
 
 POST `/api/v1/facturas-electronicas`
 
-Crear una nueva factura electrónica. El UUID SAT debe ser único, el monto positivo, y las opciones de estado son: "Emitida" o "Anulada".
+Crear una nueva factura electrónica.
+
+Opciones válidas para `estado`:
+
+* Emitida
+* Anulada
 
 Ejemplo de body:
 
@@ -428,7 +497,7 @@ Ejemplo de body:
 
 PUT `/api/v1/facturas-electronicas/{id}`
 
-Actualiza una factura electrónica. El UUID SAT debe ser único, el monto positivo, y las opciones de estado son: "Emitida" o "Anulada".
+Actualiza una factura electrónica.
 
 Ejemplo de body:
 
@@ -497,6 +566,86 @@ Realiza un borrado lógico usando Soft Deletes.
 
 ---
 
+### Asistencia CRUD
+
+CRUD completo implementado para las operaciones de la tabla `asistencia`.
+
+Este módulo permite registrar entradas y salidas de empleados usando jornadas activas.
+
+### Endpoints
+
+GET `/api/v1/asistencias`
+
+Leer todas las las asistencias registradas.
+
+GET `/api/v1/asistencias/{id}`
+
+Retorna una asistencia en base a su ID.
+
+POST `/api/v1/asistencias`
+
+Registrar entrada (Clock In) de un empleado.
+
+Ejemplo de body:
+
+```json
+{
+    "id_empleado": 5
+}
+```
+
+Comportamiento:
+
+* Registra automáticamente:
+  * fecha
+  * hora_entrada
+  * estado = "Activa"
+
+* No permite múltiples jornadas activas para el mismo empleado.
+
+PUT `/api/v1/asistencias/{id}`
+
+Finaliza una jornada usando el ID de asistencia.
+
+Ejemplo:
+
+```text
+PUT /api/v1/asistencias/16
+```
+
+No requiere body.
+
+Comportamiento:
+
+* Actualiza:
+  * hora_salida
+  * estado = "Finalizada"
+
+PUT `/api/v1/asistencias/empleado/{id_empleado}`
+
+Finaliza la jornada activa usando el ID del empleado.
+
+Ejemplo:
+
+```text
+PUT /api/v1/asistencias/empleado/5
+```
+
+No requiere body.
+
+Comportamiento:
+
+* Busca la jornada activa del empleado.
+* Registra automáticamente:
+  * hora_salida
+  * estado = "Finalizada"
+
+DELETE `/api/v1/asistencias/{id}`
+
+Elimina una asistencia.
+
+---
+
 ## Componentes de arquitectura
 
 ### Models
@@ -510,8 +659,11 @@ Realiza un borrado lógico usando Soft Deletes.
 * `Pedido.php`
 * `FacturaElectronica.php`
 * `DetallePedido.php`
+* `Asistencia.php`
 
 Representan las tablas usando Eloquent ORM.
+
+---
 
 ### Controllers
 
@@ -524,8 +676,11 @@ Representan las tablas usando Eloquent ORM.
 * `PedidoController.php`
 * `FacturaElectronicaController.php`
 * `DetallePedidoController.php`
+* `AsistenciaController.php`
 
 Manejan las peticiones y respuestas HTTP.
+
+---
 
 ### Services
 
@@ -538,8 +693,11 @@ Manejan las peticiones y respuestas HTTP.
 * `PedidoService.php`
 * `FacturaElectronicaService.php`
 * `DetallePedidoService.php`
+* `AsistenciaService.php`
 
 Contienen la lógica de negocio.
+
+---
 
 ### Repositories
 
@@ -552,8 +710,11 @@ Contienen la lógica de negocio.
 * `PedidoRepository.php`
 * `FacturaElectronicaRepository.php`
 * `DetallePedidoRepository.php`
+* `AsistenciaRepository.php`
 
 Manejan las operaciones de la base de datos.
+
+---
 
 ### Request Validation
 
@@ -602,7 +763,14 @@ Detalle Pedido:
 * `StoreDetallePedidoRequest.php`
 * `UpdateDetallePedidoRequest.php`
 
+Asistencia:
+
+* `StoreAsistenciaRequest.php`
+* `UpdateAsistenciaRequest.php`
+
 Responsables de validar información entrante solicitada.
+
+---
 
 ### Resources
 
@@ -615,6 +783,7 @@ Responsables de validar información entrante solicitada.
 * `PedidoResource.php`
 * `FacturaElectronicaResource.php`
 * `DetallePedidoResource.php`
+* `AsistenciaResource.php`
 
 Crean respuestas API JSON.
 
@@ -631,7 +800,9 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
+
+---
 
 ### Producto Menu
 
@@ -642,7 +813,9 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
+
+---
 
 ### Mesa
 
@@ -653,7 +826,9 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
+
+---
 
 ### Cliente
 
@@ -664,7 +839,7 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
 
 Campos importantes:
 
@@ -672,6 +847,8 @@ Campos importantes:
 * telefono
 * correo
 * direccion
+
+---
 
 ### Empleado
 
@@ -682,13 +859,15 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
 
 Campos importantes:
 
 * username
 * password
 * remember_token
+
+---
 
 ### Planilla
 
@@ -699,13 +878,15 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
 
 Campos importantes:
 
 * id_empleado
 * periodo
 * salario_neto
+
+---
 
 ### Pedido
 
@@ -716,16 +897,20 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
 
 Campos importantes:
 
 * estado
 * tipo
+* metodo_pago
+* detalle_pago
 * total
 * id_mesa
 * id_cliente
 * id_empleado
+
+---
 
 ### Factura Electronica
 
@@ -736,7 +921,7 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
 
 Campos importantes:
 
@@ -747,6 +932,8 @@ Campos importantes:
 * estado
 * id_pedido
 
+---
+
 ### Detalle Pedido
 
 Configuración personalizada de tabla:
@@ -756,7 +943,7 @@ Configuración personalizada de tabla:
 
 Soft Deletes habilitado:
 
-* deleted_at
+* `deleted_at`
 
 Campos importantes:
 
@@ -766,10 +953,62 @@ Campos importantes:
 * subtotal
 * notas
 
+---
+
+### Asistencia
+
+Configuración personalizada de tabla:
+
+* Table: `asistencia`
+* Primary key: `id_asistencia`
+
+Campos importantes:
+
+* id_empleado
+* fecha
+* hora_entrada
+* hora_salida
+* estado
+
+Estados posibles:
+
+* Activa
+* Finalizada
+
 Timestamps enabled:
 
 * created_at
 * updated_at
+
+---
+
+## Manejo de errores API
+
+La API utiliza respuestas JSON para errores comunes.
+
+Ejemplo de ruta inválida:
+
+```json
+{
+    "message": "Ruta no encontrada. Verifique la URL de la API."
+}
+```
+
+Ejemplo de jornada activa existente:
+
+```json
+{
+    "message": "El empleado ya tiene una jornada activa."
+}
+```
+
+Ejemplo de jornada finalizada:
+
+```json
+{
+    "message": "La jornada ya fue finalizada."
+}
+```
 
 ---
 
@@ -781,42 +1020,19 @@ Las rutas usan versionamiento:
 /api/v1/
 ```
 
-Ejemplo:
+Ejemplos:
 
 ```text
 /api/v1/categorias-menu
-```
-
-```text
 /api/v1/productos-menu
-```
-
-```text
 /api/v1/mesas
-```
-
-```text
 /api/v1/clientes
-```
-
-```text
 /api/v1/empleados
-```
-
-```text
 /api/v1/planillas
-```
-
-```text
 /api/v1/pedidos
-```
-
-```text
 /api/v1/facturas-electronicas
-```
-
-```text
 /api/v1/detalles-pedido
+/api/v1/asistencias
 ```
 
 ---
