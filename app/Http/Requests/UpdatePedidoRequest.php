@@ -20,7 +20,8 @@ class UpdatePedidoRequest extends FormRequest
             'total' => 'sometimes|numeric|min:0',
             'id_mesa' => 'nullable|exists:mesa,id_mesa',
             'id_cliente' => 'nullable|exists:cliente,id_cliente',
-            'id_empleado' => 'sometimes|exists:empleado,id_empleado'
+            'id_empleado' => 'sometimes|exists:empleado,id_empleado',
+            'metodo_pago' => 'required|in:Efectivo,Tarjeta,Transferencia,Credito'
         ];
     }
     public function messages(): array

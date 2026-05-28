@@ -14,15 +14,31 @@ class ClienteResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request): array
     {
-
-    // Devuelve un array con los campos del cliente que se deben incluir en la respuesta de la API. Esto incluye el ID del cliente, su nombre, NIT, dirección y las fechas de creación y actualización.
         return [
             'id_cliente' => $this->id_cliente,
             'nombre' => $this->nombre,
             'nit' => $this->nit,
             'direccion' => $this->direccion,
+
+            'tipo_cliente' => $this->tipo_cliente,
+
+            'username' => $this->username,
+
+            'email' => $this->email,
+
+            'telefono' => $this->telefono,
+
+            'limite_credito' => $this->limite_credito,
+
+            'saldo_credito_actual' => $this->saldo_credito_actual,
+
+            'credito_disponible' =>
+                $this->limite_credito - $this->saldo_credito_actual,
+
+            'estado' => $this->estado,
+
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

@@ -14,34 +14,36 @@ class UpdateFacturaElectronicaRequest extends FormRequest
 
     // Get the validation rules that apply to the request. Este método devuelve un arreglo de reglas de validación para los campos necesarios al actualizar una factura electrónica. Estas reglas aseguran que el UUID del SAT sea único (excluyendo la factura actual), que la fecha de emisión sea una fecha válida, que el NIT del receptor sea una cadena de texto con un máximo de 25 caracteres, que el monto total sea un número positivo, que el estado sea Emitida o Anulada, que el método de pago sea uno de los valores permitidos (Efectivo, Tarjeta, Transferencia o Credito), que el estado de pago sea Pendiente o Pagada, y que el detalle de pago sea obligatorio si el método de pago es Tarjeta, Transferencia o Credito. Además, se permite que algunos campos sean opcionales (usando 'sometimes'), lo que significa que solo se validarán si están presentes en la solicitud, lo que facilita la actualización parcial de una factura electrónica sin requerir que todos los campos estén presentes.
     public function rules(): array
-    {
-        return [
-            'uuid_sat' => 'sometimes|string|max:100|unique:factura_electronica,uuid_sat,' . $this->route('id') . ',id_factura',
+{
+    return [
+        'uuid_sat' => 'sometimes|string|max:100',
 
-            'fecha_emision' => 'sometimes|date',
+        'fecha_emision' => 'sometimes|date',
 
-            'nit_receptor' => 'sometimes|string|max:25',
+        'fecha_vencimiento' => 'nullable|date',
 
-            'monto_total' => 'sometimes|numeric|min:0',
+        'nit_receptor' => 'sometimes|string|max:25',
 
-            'estado' => 'sometimes|in:Emitida,Anulada',
+        'monto_total' => 'sometimes|numeric|min:0',
 
-            'metodo_pago' => 'nullable|in:Efectivo,Tarjeta,Transferencia,Credito',
+        'estado' => 'sometimes|in:Emitida,Anulada',
 
-            'estado_pago' => 'sometimes|in:Pendiente,Pagada',
+        'metodo_pago' =>
+            'sometimes|nullable|in:Efectivo,Tarjeta,Transferencia,Credito',
 
-            'detalle_pago' => [
-                'nullable',
-                'string',
-                'max:255',
-                'required_if:metodo_pago,Tarjeta,Transferencia,Credito'
-            ],
+        'detalle_pago' =>
+            'sometimes|nullable|string|max:150',
 
-            'id_cliente_deudor' => 'nullable|exists:cliente,id_cliente',
+        'estado_pago' =>
+            'sometimes|in:Pendiente,Pagada',
 
-            'id_pedido' => 'sometimes|exists:pedido,id_pedido'
-        ];
-    }
+        'id_cliente_deudor' =>
+            'sometimes|nullable|exists:cliente,id_cliente',
+
+        'id_pedido' =>
+            'sometimes|exists:pedido,id_pedido'
+    ];
+}
 
     // Definir mensajes de error personalizados para las reglas de validación. Este método devuelve un arreglo de mensajes de error personalizados para cada regla de validación definida en el método rules(). Estos mensajes proporcionan información clara y específica sobre por qué una solicitud no cumple con las reglas de validación, lo que facilita a los usuarios entender y corregir los errores en sus solicitudes.
     public function withValidator($validator)

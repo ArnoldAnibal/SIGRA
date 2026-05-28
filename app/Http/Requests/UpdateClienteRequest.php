@@ -13,11 +13,27 @@ class UpdateClienteRequest extends FormRequest
     }
 
     public function rules(): array
-    {
-        return [
-            'nombre' => 'sometimes|string|max:100',
-            'nit' => 'nullable|string|max:25',
-            'direccion' => 'nullable|string|max:255'
-        ];
-    }
+{
+    $idCliente = $this->route('cliente');
+
+    return [
+        'nombre' => 'sometimes|string|max:100',
+        'nit' => 'nullable|string|max:25',
+        'direccion' => 'nullable|string|max:255',
+
+        'tipo_cliente' => 'sometimes|in:Individual,Empresa',
+
+        'username' => 'sometimes|string|max:50|unique:cliente,username,' . $idCliente . ',id_cliente',
+
+        'password' => 'nullable|string|min:6',
+
+        'email' => 'sometimes|email|max:150|unique:cliente,email,' . $idCliente . ',id_cliente',
+
+        'telefono' => 'nullable|string|max:25',
+
+        'limite_credito' => 'nullable|numeric|min:0',
+
+        'estado' => 'nullable|in:Activo,Suspendido'
+    ];
+}
 }

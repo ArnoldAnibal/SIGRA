@@ -19,7 +19,11 @@ class PedidoResource extends JsonResource
             'id_cliente' => $this->id_cliente,
             'id_empleado' => $this->id_empleado,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
+            'direccion_entrega' => $this->direccion_entrega,
+            'telefono_contacto' => $this->telefono_contacto,
+            'es_delivery' => $this->es_delivery,
+            'metodo_pago' => $this->metodo_pago,
         ];
     }
 }

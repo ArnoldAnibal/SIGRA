@@ -3,45 +3,132 @@
 namespace App\Services;
 
 use App\Repositories\FacturaElectronicaRepository;
+use App\Models\Cliente;
 
-// Servicio para manejar la lógica de negocio relacionada con las facturas electrónicas. Este servicio utiliza el repositorio FacturaElectronicaRepository para interactuar con la base de datos y proporciona métodos para obtener todas las facturas, obtener una factura por su ID, crear una nueva factura, actualizar una factura existente y eliminar una factura. Al utilizar este servicio, se abstrae la lógica de negocio relacionada con las facturas electrónicas, lo que facilita el mantenimiento y la reutilización del código en los controladores que interactúan con esta entidad.
 class FacturaElectronicaService
 {
     protected $repository;
 
-    // Constructor que recibe una instancia de FacturaElectronicaRepository y la asigna a la propiedad $repository. Esto permite que el servicio utilice el repositorio para realizar operaciones relacionadas con las facturas electrónicas.
-    public function __construct(FacturaElectronicaRepository $repository)
-    {
+    public function __construct(
+        FacturaElectronicaRepository $repository
+    ) {
         $this->repository = $repository;
     }
 
-    // Método para obtener todas las facturas electrónicas. Utiliza el método getAll del repositorio para obtener los datos de las facturas electrónicas y luego los devuelve.
     public function getAll()
     {
         return $this->repository->getAll();
     }
 
-    // Método para obtener una factura electrónica por su ID. Utiliza el método findById del repositorio para obtener la factura electrónica correspondiente al ID proporcionado y luego la devuelve.
     public function getById(int $id)
     {
         return $this->repository->findById($id);
     }
 
-    // Método para crear una nueva factura electrónica. Recibe un array de datos, utiliza el método create del repositorio para crear la factura en la base de datos y devuelve la factura creada.
     public function create(array $data)
     {
+        /*
+        |--------------------------------------------------------------------------
+        | FACTURAS A CRÉDITO
+        |--------------------------------------------------------------------------
+        |
+        | El crédito ya fue validado y descontado
+        | al momento de crear el pedido.
+        |
+        | Aquí solamente:
+        | - Validamos datos
+        | - Marcamos estado_pago
+        |
+        */
+
+        if (
+            isset($data['metodo_pago']) &&
+            $data['metodo_pago'] === 'Credito'
+        ) {
+
+            if (!isset($data['id_cliente_deudor'])) {
+                throw new \Exception(
+                    'La factura a crédito requiere cliente deudor.'
+                );
+            }
+
+            if (!isset($data['fecha_vencimiento'])) {
+                throw new \Exception(
+                    'La factura a crédito requiere fecha de vencimiento.'
+                );
+            }
+
+            $cliente = Cliente::find(
+                $data['id_cliente_deudor']
+            );
+
+            if (!$cliente) {
+                throw new \Exception(
+                    'Cliente deudor no encontrado.'
+                );
+            }
+
+            if ($cliente->tipo_cliente !== 'Empresa') {
+                throw new \Exception(
+                    'Solo clientes empresa pueden usar crédito.'
+                );
+            }
+
+            $data['estado_pago'] = 'Pendiente';
+
+        } else {
+
+            $data['estado_pago'] = 'Pagada';
+        }
+
         return $this->repository->create($data);
     }
 
-    // Método para actualizar una factura electrónica existente. Recibe la factura a actualizar y un array de datos con los nuevos valores, utiliza el método update del repositorio para actualizar la factura en la base de datos y devuelve la factura actualizada.
-    public function update($factura, array $data)
-    {
-        return $this->repository->update($factura, $data);
+public function update($factura, array $data)
+{
+    // If invoice is being marked as paid
+    if (
+        isset($data['estado_pago']) &&
+        $data['estado_pago'] === 'Pagada' &&
+        $factura->estado_pago !== 'Pagada'
+    ) {
+        // set payment timestamp
+        $data['fecha_pago'] = now()->format('Y-m-d H:i:s');
+
+        // release credit (IMPORTANT)
+        $cliente = Cliente::find($factura->id_cliente_deudor);
+
+        if ($cliente) {
+            $cliente->saldo_credito_actual =
+                max(0, $cliente->saldo_credito_actual - $factura->monto_total);
+
+            $cliente->save();
+        }
     }
 
-    // Método para eliminar una factura electrónica. Recibe la factura a eliminar, utiliza el método delete del repositorio para eliminar la factura de la base de datos y devuelve un booleano indicando si la operación fue exitosa.
+    // If invoice is being cancelled
+    if (
+        isset($data['estado']) &&
+        $data['estado'] === 'Anulada' &&
+        $factura->estado === 'Emitida'
+    ) {
+        $cliente = Cliente::find($factura->id_cliente_deudor);
+
+        if ($cliente) {
+            $cliente->saldo_credito_actual =
+                max(0, $cliente->saldo_credito_actual - $factura->monto_total);
+
+            $cliente->save();
+        }
+    }
+
+    return $this->repository->update($factura, $data);
+}
+
     public function delete($factura)
     {
-        return $this->repository->delete($factura);
+        return $this->repository->delete(
+            $factura
+        );
     }
 }

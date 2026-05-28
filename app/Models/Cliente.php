@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-// Modelo para la tabla "cliente" con los campos "id_cliente", "nombre", "nit" y "direccion". El campo "id_cliente" es la clave primaria y se autoincrementa. El modelo utiliza soft deletes para permitir la eliminación lógica de los registros.
-
 class Cliente extends Model
 {
     use SoftDeletes;
@@ -15,10 +13,47 @@ class Cliente extends Model
 
     protected $primaryKey = 'id_cliente';
 
-    // $fillable define los campos que se pueden asignar masivamente cuando se crea o actualiza un registro. Esto ayuda a proteger contra asignaciones masivas no deseadas.
     protected $fillable = [
         'nombre',
         'nit',
-        'direccion'
+        'direccion',
+        'tipo_cliente',
+        'username',
+        'password',
+        'email',
+        'telefono',
+        'limite_credito',
+        'saldo_credito_actual',
+        'estado'
     ];
+
+    protected $hidden = [
+        'password'
+    ];
+
+    protected $casts = [
+        'limite_credito' => 'decimal:2',
+        'saldo_credito_actual' => 'decimal:2'
+    ];
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'id_cliente');
+    }
+
+    public function facturasCredito()
+    {
+        return $this->hasMany(
+            FacturaElectronica::class,
+            'id_cliente_deudor'
+        );
+    }
+
+    public function metodosPago()
+    {
+        return $this->hasMany(
+            ClienteMetodoPago::class,
+            'id_cliente'
+        );
+    }
 }

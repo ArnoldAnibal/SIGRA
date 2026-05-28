@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\FacturaElectronicaController;
 use App\Http\Controllers\Api\DetallePedidoController;
 use App\Http\Controllers\Api\AsistenciaController;
+use App\Http\Controllers\Api\PagoController;
 
 // Definimos un grupo de rutas con el prefijo 'v1' para versionar nuestra API. Dentro de este grupo, registramos un recurso API para las categorías de menú utilizando el controlador CategoriaMenuController, lo que automáticamente genera las rutas para las operaciones CRUD (index, show, store, update, destroy) relacionadas con las categorías de menú.
 Route::prefix('v1')->group(function () {
@@ -81,6 +82,11 @@ Route::prefix('v1')->group(function () {
     Route::apiResource(
         'detalles-pedido',
         DetallePedidoController::class
+    );
+
+    Route::apiResource(
+        'pagos',
+        PagoController::class
     );
 
     // Registramos un recurso API para las asistencias utilizando el controlador AsistenciaController, lo que automáticamente genera las rutas para las operaciones CRUD (index, show, store, update, destroy) relacionadas con las asistencias. Esto permite a los clientes de la API interactuar con las asistencias a través de las rutas definidas, facilitando la gestión de las asistencias en la aplicación.

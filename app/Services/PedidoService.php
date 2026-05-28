@@ -3,43 +3,108 @@
 namespace App\Services;
 
 use App\Repositories\PedidoRepository;
+use App\Models\Cliente;
+use Exception;
 
-// Servicio para manejar la lógica de negocio relacionada con los pedidos. Este servicio utiliza el PedidoRepository para interactuar con la base de datos y proporciona métodos para obtener todos los pedidos, obtener un pedido por su ID, crear un nuevo pedido, actualizar un pedido existente y eliminar un pedido. Al utilizar este servicio, se abstrae la lógica de negocio del controlador, lo que facilita el mantenimiento y la reutilización del código.
+// Servicio para manejar la lógica de negocio relacionada con los pedidos.
+// Ahora incluye validación de crédito para clientes empresariales.
 class PedidoService
 {
     protected $repository;
 
-    // Constructor que recibe una instancia de PedidoRepository y la asigna a la propiedad $repository. Esto permite que el servicio utilice el repositorio para realizar operaciones relacionadas con los pedidos.
+    // Constructor que recibe una instancia de PedidoRepository.
     public function __construct(PedidoRepository $repository)
     {
         $this->repository = $repository;
     }
 
-    // Método para obtener todos los pedidos. Utiliza el método getAll del repositorio para obtener los datos de los pedidos y luego los devuelve.
+    // Obtener todos los pedidos
     public function getAll()
     {
         return $this->repository->getAll();
     }
 
-    // Método para obtener un pedido por su ID. Utiliza el método findById del repositorio para obtener el pedido correspondiente al ID proporcionado y luego lo devuelve.
+    // Obtener pedido por ID
     public function getById(int $id)
     {
         return $this->repository->findById($id);
     }
 
-    // Método para crear un nuevo pedido. Recibe un array de datos, utiliza el método create del repositorio para crear el pedido en la base de datos y devuelve el pedido creado.
+    // Crear un nuevo pedido
     public function create(array $data)
     {
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDACIÓN DE CRÉDITO EMPRESARIAL
+        |--------------------------------------------------------------------------
+        |
+        | Si el pedido será pagado con crédito:
+        | - El cliente debe existir
+        | - Debe ser tipo Empresa
+        | - Debe estar Activo
+        | - Debe tener suficiente crédito disponible
+        |
+        */
+
+        if (
+            isset($data['metodo_pago']) &&
+            $data['metodo_pago'] === 'Credito'
+        ) {
+
+            $cliente = Cliente::find($data['id_cliente']);
+
+            // Validar existencia del cliente
+            if (!$cliente) {
+                throw new Exception('Cliente no encontrado.');
+            }
+
+            // Validar que sea empresa
+            if ($cliente->tipo_cliente !== 'Empresa') {
+                throw new Exception(
+                    'Solo los clientes empresariales pueden usar crédito.'
+                );
+            }
+
+            // Validar estado del cliente
+            if ($cliente->estado !== 'Activo') {
+                throw new Exception(
+                    'El cliente empresarial está suspendido.'
+                );
+            }
+
+            // Calcular nuevo saldo
+            $nuevoSaldo =
+                $cliente->saldo_credito_actual + $data['total'];
+
+            // Validar límite de crédito
+            if ($nuevoSaldo > $cliente->limite_credito) {
+
+                $creditoDisponible =
+                    $cliente->limite_credito -
+                    $cliente->saldo_credito_actual;
+
+                throw new Exception(
+                    'Crédito insuficiente. Crédito disponible: Q' .
+                    number_format($creditoDisponible, 2)
+                );
+            }
+
+            // Actualizar saldo de crédito
+            $cliente->saldo_credito_actual = $nuevoSaldo;
+            $cliente->save();
+        }
+
+        // Crear pedido
         return $this->repository->create($data);
     }
 
-    // Método para actualizar un pedido existente. Recibe el pedido a actualizar y un array de datos con los nuevos valores, utiliza el método update del repositorio para actualizar el pedido en la base de datos y devuelve el pedido actualizado.
+    // Actualizar pedido existente
     public function update($pedido, array $data)
     {
         return $this->repository->update($pedido, $data);
     }
 
-    // Método para eliminar un pedido. Recibe el pedido a eliminar, utiliza el método delete del repositorio para eliminar el pedido de la base de datos y devuelve un booleano indicando si la operación fue exitosa.
+    // Eliminar pedido
     public function delete($pedido)
     {
         return $this->repository->delete($pedido);

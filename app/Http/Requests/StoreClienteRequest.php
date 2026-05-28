@@ -17,7 +17,21 @@ class StoreClienteRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:100',
             'nit' => 'nullable|string|max:25',
-            'direccion' => 'nullable|string|max:255'
+            'direccion' => 'nullable|string|max:255',
+
+            'tipo_cliente' => 'required|in:Individual,Empresa',
+
+            'username' => 'required|string|max:50|unique:cliente,username',
+
+            'password' => 'required|string|min:6',
+
+            'email' => 'required|email|max:150|unique:cliente,email',
+
+            'telefono' => 'nullable|string|max:25',
+
+            'limite_credito' => 'nullable|numeric|min:0',
+
+            'estado' => 'nullable|in:Activo,Suspendido'
         ];
     }
 }

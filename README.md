@@ -1,8 +1,10 @@
 # SIGRA API Restaurante
 
-REST API desarrollado con Laravel 13 para la administración de un restaurante.
+REST API desarrollado con Laravel 13 para la administración integral del restaurante **La Antigua**.
 
-## Tecnologías Utilizadas
+---
+
+# Tecnologías Utilizadas
 
 * PHP 8.2
 * Laravel 13
@@ -10,14 +12,17 @@ REST API desarrollado con Laravel 13 para la administración de un restaurante.
 * XAMPP
 * Composer
 * Laravel Eloquent ORM
+* Laravel Resources
+* Laravel Form Requests
+* Soft Deletes
 
 ---
 
-## Arquitectura Actual
+# Arquitectura Actual
 
-El proyecto sigue una arquitectura en capas usando las mejores practicas de Laravel.
+El proyecto sigue una arquitectura en capas utilizando buenas prácticas de Laravel.
 
-### Estructura
+## Estructura
 
 ```text
 app/
@@ -32,239 +37,317 @@ app/
 
 ---
 
-## Modulos Implementados
+# Funcionalidades Implementadas
 
-### Categoria Menu CRUD
+## Gestión de Menú
 
-CRUD completo implementado para las operaciones de la tabla `categoria_menu`.
+### Categorías de Menú
 
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
+CRUD completo para categorías.
 
-### Endpoints
+### Productos del Menú
 
-GET `/api/v1/categorias-menu`
+CRUD completo para productos.
 
-Leer todas las categorias.
+### Nuevas funcionalidades
 
-GET `/api/v1/categorias-menu/{id}`
+* Soporte para imágenes de productos.
+* Campo `imagen` agregado a `producto_menu`.
+* API retorna `imagen_url` automáticamente.
 
-Retorna una categoría en base a su ID.
-
-POST `/api/v1/categorias-menu`
-
-Crear una nueva categoría.
-
-Ejemplo de body:
+Ejemplo:
 
 ```json
 {
-    "nombre": "Bebidas"
+    "imagen_url": "http://127.0.0.1:8000/storage/productos/ceviche.jpg"
 }
 ```
 
-PUT `/api/v1/categorias-menu/{id}`
+### Upload de imágenes
 
-Actualiza una categoria.
+Los productos pueden enviarse usando:
 
-Ejemplo de body:
-
-```json
-{
-    "nombre": "Postres"
-}
+```text
+multipart/form-data
 ```
 
-DELETE `/api/v1/categorias-menu/{id}`
+Campo:
 
-Realiza un borrado lógico usando Soft Deletes.
+```text
+imagen
+```
+
+El backend almacena las imágenes en:
+
+```text
+storage/app/public/productos
+```
 
 ---
 
-### Producto Menu CRUD
+# Gestión de Mesas
 
-CRUD completo implementado para las operaciones de la tabla `producto_menu`.
+CRUD completo de mesas.
 
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
-
-### Endpoints
-
-GET `/api/v1/productos-menu`
-
-Leer todos los productos.
-
-GET `/api/v1/productos-menu/{id}`
-
-Retorna un producto en base a su ID.
-
-POST `/api/v1/productos-menu`
-
-Crear un nuevo producto.
-
-Ejemplo de body:
-
-```json
-{
-    "id_categoria": 3,
-    "nombre": "Pizza Pepperoni",
-    "descripcion": "Pizza grande con pepperoni",
-    "precio_venta": 85.50,
-    "disponible": 1
-}
-```
-
-PUT `/api/v1/productos-menu/{id}`
-
-Actualiza un producto.
-
-Ejemplo de body:
-
-```json
-{
-    "id_categoria": 3,
-    "nombre": "Pizza Suprema",
-    "descripcion": "Pizza familiar especial",
-    "precio_venta": 95.00,
-    "disponible": 1
-}
-```
-
-DELETE `/api/v1/productos-menu/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
-
----
-
-### Mesa CRUD
-
-CRUD completo implementado para las operaciones de la tabla `mesa`.
-
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
-
-### Endpoints
-
-GET `/api/v1/mesas`
-
-Leer todas las mesas.
-
-GET `/api/v1/mesas/{id}`
-
-Retorna una mesa en base a su ID.
-
-POST `/api/v1/mesas`
-
-Crear una nueva mesa.
-
-Opciones válidas para `estado`:
+Estados soportados:
 
 * Libre
 * Ocupada
 * Reservada
 * Mantenimiento
 
-Ejemplo de body:
+---
 
-```json
-{
-    "numero_mesa": 10,
-    "capacidad": 4,
-    "estado": "Libre"
-}
-```
+# Gestión de Clientes
 
-PUT `/api/v1/mesas/{id}`
-
-Actualiza una mesa.
-
-Ejemplo de body:
-
-```json
-{
-    "numero_mesa": 12,
-    "capacidad": 6,
-    "estado": "Reservada"
-}
-```
-
-DELETE `/api/v1/mesas/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
+CRUD completo de clientes.
 
 ---
 
-### Cliente CRUD
+# Crédito Empresarial
 
-CRUD completo implementado para las operaciones de la tabla `cliente`.
+Se implementó soporte para clientes empresariales con control de crédito.
 
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
+## Nuevos campos en cliente
 
-### Endpoints
+* `tipo_cliente`
+* `limite_credito`
+* `saldo_credito_actual`
+* `estado`
 
-GET `/api/v1/clientes`
+## Tipos de cliente
 
-Leer todos los clientes.
+* Individual
+* Empresa
 
-GET `/api/v1/clientes/{id}`
+## Estados empresariales
 
-Retorna un cliente en base a su ID.
-
-POST `/api/v1/clientes`
-
-Crear un nuevo cliente.
-
-Ejemplo de body:
-
-```json
-{
-    "nombre": "Juan Perez",
-    "telefono": "5555-5555",
-    "nit": "10818598-1",
-    "correo": "juanperez@email.com",
-    "direccion": "Ciudad de Guatemala"
-}
-```
-
-PUT `/api/v1/clientes/{id}`
-
-Actualiza un cliente.
-
-Ejemplo de body:
-
-```json
-{
-    "nombre": "Juan Carlos Perez",
-    "telefono": "4444-4444",
-    "correo": "juancarlos@email.com",
-    "direccion": "Antigua Guatemala"
-}
-```
-
-DELETE `/api/v1/clientes/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
+* Activo
+* Suspendido
 
 ---
 
-### Empleado CRUD
+# Validaciones de Crédito
 
-CRUD completo implementado para las operaciones de la tabla `empleado`.
+Cuando un pedido usa:
 
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
+```text
+metodo_pago = Credito
+```
 
-### Endpoints
+el sistema valida:
 
-GET `/api/v1/empleados`
+* Que el cliente exista.
+* Que sea tipo Empresa.
+* Que esté Activo.
+* Que tenga suficiente crédito disponible.
 
-Leer todos los empleados.
+Si el crédito es insuficiente:
 
-GET `/api/v1/empleados/{id}`
+```json
+{
+    "message": "Crédito insuficiente."
+}
+```
 
-Retorna un empleado en base a su ID.
+---
 
-POST `/api/v1/empleados`
+# Gestión de Pedidos
 
-Crear un nuevo empleado.
+CRUD completo implementado.
 
-Opciones válidas para `rol`:
+## Tipos de pedido
+
+* Para Aca
+* Para Llevar
+* Online
+
+## Estados de pedido
+
+* Pendiente
+* Preparando
+* Preparado
+* Entregado
+* Cancelado
+
+## Métodos de pago
+
+* Efectivo
+* Tarjeta
+* Transferencia
+* Credito
+
+---
+
+# Delivery / Pedidos Online
+
+Se agregó soporte para pedidos a domicilio.
+
+## Nuevos campos
+
+* `direccion_entrega`
+* `telefono_contacto`
+
+## Validaciones
+
+Cuando:
+
+```text
+tipo = Online
+```
+
+el campo:
+
+```text
+direccion_entrega
+```
+
+es obligatorio.
+
+---
+
+# Tracking de Pedidos
+
+El backend ya soporta tracking de pedidos mediante el campo:
+
+```text
+estado
+```
+
+Los cocineros pueden consultar únicamente pedidos:
+
+```text
+Pendiente
+Preparando
+```
+
+Esto permite construir fácilmente una pantalla de cocina en frontend.
+
+---
+
+# Facturación Electrónica
+
+CRUD completo implementado.
+
+## Estados de factura
+
+* Emitida
+* Anulada
+
+## Estados de pago
+
+* Pendiente
+* Pagada
+
+---
+
+# Facturación a Crédito
+
+Se agregó soporte para facturas empresariales a crédito.
+
+## Nuevos campos
+
+* `estado_pago`
+* `fecha_vencimiento`
+* `fecha_pago`
+* `id_cliente_deudor`
+* `metodo_pago`
+
+## Flujo implementado
+
+Cuando la factura:
+
+```text
+metodo_pago = Credito
+```
+
+el sistema:
+
+* Marca la factura como `Pendiente`
+* Guarda fecha de vencimiento
+* Relaciona el cliente deudor
+
+---
+
+# Pago de Facturas
+
+Cuando una factura cambia:
+
+```text
+estado_pago = Pagada
+```
+
+el sistema:
+
+* Registra automáticamente:
+
+  * `fecha_pago`
+* Reduce automáticamente:
+
+  * `saldo_credito_actual`
+
+del cliente empresarial.
+
+---
+
+# Anulación de Facturas
+
+Cuando una factura cambia:
+
+```text
+estado = Anulada
+```
+
+el sistema:
+
+* Revierte automáticamente el crédito utilizado.
+* Reduce el saldo pendiente del cliente.
+
+---
+
+# Inventario
+
+Se inició el módulo de inventario.
+
+## Tabla implementada
+
+```text
+inventario_movimiento
+```
+
+## Objetivo
+
+Registrar:
+
+* Entradas
+* Salidas
+* Ajustes
+* Consumo de cocina
+
+---
+
+# Cuentas por Pagar
+
+Se agregaron tablas para:
+
+* `proveedor`
+* `cuentas_por_pagar`
+
+Esto permitirá manejar:
+
+* Deudas con proveedores
+* Compras
+* Pagos pendientes
+
+---
+
+# Recursos Humanos
+
+## Empleados
+
+CRUD completo implementado.
+
+Roles soportados:
 
 * Administrador
 * Mesero
@@ -272,749 +355,47 @@ Opciones válidas para `rol`:
 * Recepcionista
 * Cocinero
 
-Ejemplo de body:
+---
 
-```json
-{
-    "nombre": "Carlos Lopez",
-    "rol": "Mesero",
-    "username": "carlos123",
-    "password": "123456"
-}
-```
+# Planilla
 
-PUT `/api/v1/empleados/{id}`
-
-Actualiza un empleado.
-
-Ejemplo de body:
-
-```json
-{
-    "nombre": "Carlos Lopez",
-    "rol": "Administrador",
-    "username": "carlos_admin"
-}
-```
-
-Actualizar contraseña:
-
-```json
-{
-    "password": "nuevaPassword123"
-}
-```
-
-DELETE `/api/v1/empleados/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
+CRUD completo implementado.
 
 ---
 
-### Planilla CRUD
+# Asistencia
 
-CRUD completo implementado para las operaciones de la tabla `planilla`.
+Sistema funcional de:
 
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
+* Clock In
+* Clock Out
 
-### Endpoints
+Validaciones implementadas:
 
-GET `/api/v1/planillas`
-
-Leer todas las planillas.
-
-GET `/api/v1/planillas/{id}`
-
-Retorna una planilla en base a su ID.
-
-POST `/api/v1/planillas`
-
-Crear una nueva planilla.
-
-Ejemplo de body:
-
-```json
-{
-    "id_empleado": 1,
-    "periodo": "Mayo 2026",
-    "salario_neto": 4500.00
-}
-```
-
-PUT `/api/v1/planillas/{id}`
-
-Actualiza una planilla.
-
-Ejemplo de body:
-
-```json
-{
-    "periodo": "Junio 2026",
-    "salario_neto": 5000.00
-}
-```
-
-DELETE `/api/v1/planillas/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
+* No múltiples jornadas activas.
+* Finalización automática de jornada.
 
 ---
 
-### Pedido CRUD
+# Soft Deletes
 
-CRUD completo implementado para las operaciones de la tabla `pedido`.
+Módulos que utilizan Soft Deletes:
 
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
-
-### Endpoints
-
-GET `/api/v1/pedidos`
-
-Leer todos los pedidos.
-
-GET `/api/v1/pedidos/{id}`
-
-Retorna un pedido en base a su ID.
-
-POST `/api/v1/pedidos`
-
-Crear un nuevo pedido.
-
-Opciones válidas para `estado`:
-
-* Pendiente
-* Preparando
-* Listo
-* Entregado
-* Cancelado
-
-Opciones válidas para `tipo`:
-
-* Para Aca
-* Llevar
-* Delivery
-
-Opciones válidas para `metodo_pago`:
-
-* Efectivo
-* Tarjeta
-* Transferencia
-
-Notas importantes:
-
-* `detalle_pago` debe ser `null` cuando el método de pago sea `Efectivo`.
-* Para `Tarjeta`, se recomienda guardar el ID de transacción o últimos 4 dígitos.
-* Para `Transferencia`, se recomienda guardar el número o referencia de transferencia.
-
-Ejemplo de body:
-
-```json
-{
-    "estado": "Pendiente",
-    "tipo": "Para Aca",
-    "metodo_pago": "Tarjeta",
-    "detalle_pago": "TXN-458921",
-    "total": 150.00,
-    "id_mesa": 2,
-    "id_cliente": 1,
-    "id_empleado": 1
-}
-```
-
-Ejemplo con efectivo:
-
-```json
-{
-    "estado": "Pendiente",
-    "tipo": "Llevar",
-    "metodo_pago": "Efectivo",
-    "detalle_pago": null,
-    "total": 85.00,
-    "id_mesa": null,
-    "id_cliente": 1,
-    "id_empleado": 3
-}
-```
-
-PUT `/api/v1/pedidos/{id}`
-
-Actualiza un pedido.
-
-Ejemplo de body:
-
-```json
-{
-    "estado": "Preparando",
-    "metodo_pago": "Transferencia",
-    "detalle_pago": "REF-20260525-7788",
-    "total": 175.00
-}
-```
-
-DELETE `/api/v1/pedidos/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
+* categoria_menu
+* producto_menu
+* mesa
+* cliente
+* empleado
+* planilla
+* pedido
+* factura_electronica
+* detalle_pedido
 
 ---
 
-### Factura Electronica CRUD
+# Versionamiento API
 
-CRUD completo implementado para las operaciones de la tabla `factura_electronica`.
-
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
-
-### Endpoints
-
-GET `/api/v1/facturas-electronicas`
-
-Leer todas las facturas electrónicas.
-
-GET `/api/v1/facturas-electronicas/{id}`
-
-Retorna una factura electrónica en base a su ID.
-
-POST `/api/v1/facturas-electronicas`
-
-Crear una nueva factura electrónica.
-
-Opciones válidas para `estado`:
-
-* Emitida
-* Anulada
-
-Ejemplo de body:
-
-```json
-{
-    "uuid_sat": "550e8400-e29b-41d4-a716-446655440000",
-    "fecha_emision": "2026-05-23 10:30:00",
-    "nit_receptor": "1234567-8",
-    "monto_total": 250.75,
-    "estado": "Emitida",
-    "id_pedido": 1
-}
-```
-
-PUT `/api/v1/facturas-electronicas/{id}`
-
-Actualiza una factura electrónica.
-
-Ejemplo de body:
-
-```json
-{
-    "monto_total": 300.50,
-    "estado": "Emitida"
-}
-```
-
-DELETE `/api/v1/facturas-electronicas/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
-
----
-
-### Detalle Pedido CRUD
-
-CRUD completo implementado para las operaciones de la tabla `detalle_pedido`.
-
-El modulo usa Soft Deletes mediante el campo `deleted_at`.
-
-### Endpoints
-
-GET `/api/v1/detalles-pedido`
-
-Leer todos los detalles de pedido.
-
-GET `/api/v1/detalles-pedido/{id}`
-
-Retorna un detalle de pedido en base a su ID.
-
-POST `/api/v1/detalles-pedido`
-
-Crear un nuevo detalle de pedido.
-
-Ejemplo de body:
-
-```json
-{
-    "id_pedido": 1,
-    "id_producto": 2,
-    "cantidad": 3,
-    "subtotal": 120.00,
-    "notas": "Sin cebolla"
-}
-```
-
-PUT `/api/v1/detalles-pedido/{id}`
-
-Actualiza un detalle de pedido.
-
-Ejemplo de body:
-
-```json
-{
-    "cantidad": 5,
-    "subtotal": 200.00,
-    "notas": "Extra queso"
-}
-```
-
-DELETE `/api/v1/detalles-pedido/{id}`
-
-Realiza un borrado lógico usando Soft Deletes.
-
----
-
-### Asistencia CRUD
-
-CRUD completo implementado para las operaciones de la tabla `asistencia`.
-
-Este módulo permite registrar entradas y salidas de empleados usando jornadas activas.
-
-### Endpoints
-
-GET `/api/v1/asistencias`
-
-Leer todas las las asistencias registradas.
-
-GET `/api/v1/asistencias/{id}`
-
-Retorna una asistencia en base a su ID.
-
-POST `/api/v1/asistencias`
-
-Registrar entrada (Clock In) de un empleado.
-
-Ejemplo de body:
-
-```json
-{
-    "id_empleado": 5
-}
-```
-
-Comportamiento:
-
-* Registra automáticamente:
-  * fecha
-  * hora_entrada
-  * estado = "Activa"
-
-* No permite múltiples jornadas activas para el mismo empleado.
-
-PUT `/api/v1/asistencias/{id}`
-
-Finaliza una jornada usando el ID de asistencia.
-
-Ejemplo:
-
-```text
-PUT /api/v1/asistencias/16
-```
-
-No requiere body.
-
-Comportamiento:
-
-* Actualiza:
-  * hora_salida
-  * estado = "Finalizada"
-
-PUT `/api/v1/asistencias/empleado/{id_empleado}`
-
-Finaliza la jornada activa usando el ID del empleado.
-
-Ejemplo:
-
-```text
-PUT /api/v1/asistencias/empleado/5
-```
-
-No requiere body.
-
-Comportamiento:
-
-* Busca la jornada activa del empleado.
-* Registra automáticamente:
-  * hora_salida
-  * estado = "Finalizada"
-
-DELETE `/api/v1/asistencias/{id}`
-
-Elimina una asistencia.
-
----
-
-## Componentes de arquitectura
-
-### Models
-
-* `CategoriaMenu.php`
-* `ProductoMenu.php`
-* `Mesa.php`
-* `Cliente.php`
-* `Empleado.php`
-* `Planilla.php`
-* `Pedido.php`
-* `FacturaElectronica.php`
-* `DetallePedido.php`
-* `Asistencia.php`
-
-Representan las tablas usando Eloquent ORM.
-
----
-
-### Controllers
-
-* `CategoriaMenuController.php`
-* `ProductoMenuController.php`
-* `MesaController.php`
-* `ClienteController.php`
-* `EmpleadoController.php`
-* `PlanillaController.php`
-* `PedidoController.php`
-* `FacturaElectronicaController.php`
-* `DetallePedidoController.php`
-* `AsistenciaController.php`
-
-Manejan las peticiones y respuestas HTTP.
-
----
-
-### Services
-
-* `CategoriaMenuService.php`
-* `ProductoMenuService.php`
-* `MesaService.php`
-* `ClienteService.php`
-* `EmpleadoService.php`
-* `PlanillaService.php`
-* `PedidoService.php`
-* `FacturaElectronicaService.php`
-* `DetallePedidoService.php`
-* `AsistenciaService.php`
-
-Contienen la lógica de negocio.
-
----
-
-### Repositories
-
-* `CategoriaMenuRepository.php`
-* `ProductoMenuRepository.php`
-* `MesaRepository.php`
-* `ClienteRepository.php`
-* `EmpleadoRepository.php`
-* `PlanillaRepository.php`
-* `PedidoRepository.php`
-* `FacturaElectronicaRepository.php`
-* `DetallePedidoRepository.php`
-* `AsistenciaRepository.php`
-
-Manejan las operaciones de la base de datos.
-
----
-
-### Request Validation
-
-Categoria Menu:
-
-* `StoreCategoriaMenuRequest.php`
-* `UpdateCategoriaMenuRequest.php`
-
-Producto Menu:
-
-* `StoreProductoMenuRequest.php`
-* `UpdateProductoMenuRequest.php`
-
-Mesa:
-
-* `StoreMesaRequest.php`
-* `UpdateMesaRequest.php`
-
-Cliente:
-
-* `StoreClienteRequest.php`
-* `UpdateClienteRequest.php`
-
-Empleado:
-
-* `StoreEmpleadoRequest.php`
-* `UpdateEmpleadoRequest.php`
-
-Planilla:
-
-* `StorePlanillaRequest.php`
-* `UpdatePlanillaRequest.php`
-
-Pedido:
-
-* `StorePedidoRequest.php`
-* `UpdatePedidoRequest.php`
-
-Factura Electronica:
-
-* `StoreFacturaElectronicaRequest.php`
-* `UpdateFacturaElectronicaRequest.php`
-
-Detalle Pedido:
-
-* `StoreDetallePedidoRequest.php`
-* `UpdateDetallePedidoRequest.php`
-
-Asistencia:
-
-* `StoreAsistenciaRequest.php`
-* `UpdateAsistenciaRequest.php`
-
-Responsables de validar información entrante solicitada.
-
----
-
-### Resources
-
-* `CategoriaMenuResource.php`
-* `ProductoMenuResource.php`
-* `MesaResource.php`
-* `ClienteResource.php`
-* `EmpleadoResource.php`
-* `PlanillaResource.php`
-* `PedidoResource.php`
-* `FacturaElectronicaResource.php`
-* `DetallePedidoResource.php`
-* `AsistenciaResource.php`
-
-Crean respuestas API JSON.
-
----
-
-## Database Notes
-
-### Categoria Menu
-
-Configuración personalizada de tabla:
-
-* Table: `categoria_menu`
-* Primary key: `id_categoria`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
----
-
-### Producto Menu
-
-Configuración personalizada de tabla:
-
-* Table: `producto_menu`
-* Primary key: `id_producto`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
----
-
-### Mesa
-
-Configuración personalizada de tabla:
-
-* Table: `mesa`
-* Primary key: `id_mesa`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
----
-
-### Cliente
-
-Configuración personalizada de tabla:
-
-* Table: `cliente`
-* Primary key: `id_cliente`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
-Campos importantes:
-
-* nombre
-* telefono
-* correo
-* direccion
-
----
-
-### Empleado
-
-Configuración personalizada de tabla:
-
-* Table: `empleado`
-* Primary key: `id_empleado`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
-Campos importantes:
-
-* username
-* password
-* remember_token
-
----
-
-### Planilla
-
-Configuración personalizada de tabla:
-
-* Table: `planilla`
-* Primary key: `id_planilla`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
-Campos importantes:
-
-* id_empleado
-* periodo
-* salario_neto
-
----
-
-### Pedido
-
-Configuración personalizada de tabla:
-
-* Table: `pedido`
-* Primary key: `id_pedido`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
-Campos importantes:
-
-* estado
-* tipo
-* metodo_pago
-* detalle_pago
-* total
-* id_mesa
-* id_cliente
-* id_empleado
-
----
-
-### Factura Electronica
-
-Configuración personalizada de tabla:
-
-* Table: `factura_electronica`
-* Primary key: `id_factura`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
-Campos importantes:
-
-* uuid_sat
-* fecha_emision
-* nit_receptor
-* monto_total
-* estado
-* id_pedido
-
----
-
-### Detalle Pedido
-
-Configuración personalizada de tabla:
-
-* Table: `detalle_pedido`
-* Primary key: `id_detalle`
-
-Soft Deletes habilitado:
-
-* `deleted_at`
-
-Campos importantes:
-
-* id_pedido
-* id_producto
-* cantidad
-* subtotal
-* notas
-
----
-
-### Asistencia
-
-Configuración personalizada de tabla:
-
-* Table: `asistencia`
-* Primary key: `id_asistencia`
-
-Campos importantes:
-
-* id_empleado
-* fecha
-* hora_entrada
-* hora_salida
-* estado
-
-Estados posibles:
-
-* Activa
-* Finalizada
-
-Timestamps enabled:
-
-* created_at
-* updated_at
-
----
-
-## Manejo de errores API
-
-La API utiliza respuestas JSON para errores comunes.
-
-Ejemplo de ruta inválida:
-
-```json
-{
-    "message": "Ruta no encontrada. Verifique la URL de la API."
-}
-```
-
-Ejemplo de jornada activa existente:
-
-```json
-{
-    "message": "El empleado ya tiene una jornada activa."
-}
-```
-
-Ejemplo de jornada finalizada:
-
-```json
-{
-    "message": "La jornada ya fue finalizada."
-}
-```
-
----
-
-## Versionamiento de API
-
-Las rutas usan versionamiento:
+Todas las rutas utilizan:
 
 ```text
 /api/v1/
@@ -1023,47 +404,125 @@ Las rutas usan versionamiento:
 Ejemplos:
 
 ```text
-/api/v1/categorias-menu
 /api/v1/productos-menu
-/api/v1/mesas
-/api/v1/clientes
-/api/v1/empleados
-/api/v1/planillas
 /api/v1/pedidos
 /api/v1/facturas-electronicas
-/api/v1/detalles-pedido
-/api/v1/asistencias
 ```
 
 ---
 
-## Correr el proyecto
+# Endpoints Importantes
 
-Instala las dependencias:
+## Crear pedido a crédito
+
+POST `/api/v1/pedidos`
+
+```json
+{
+    "estado": "Pendiente",
+    "tipo": "Para Aca",
+    "metodo_pago": "Credito",
+    "total": 300.00,
+    "id_cliente": 16,
+    "id_empleado": 1
+}
+```
+
+---
+
+## Crear factura a crédito
+
+POST `/api/v1/facturas-electronicas`
+
+```json
+{
+    "uuid_sat": "550e8400-e29b-41d4-a716-446655440000",
+    "fecha_emision": "2026-05-27 12:00:00",
+    "nit_receptor": "1234567-8",
+    "monto_total": 300.00,
+    "estado": "Emitida",
+    "metodo_pago": "Credito",
+    "estado_pago": "Pendiente",
+    "id_cliente_deudor": 16,
+    "fecha_vencimiento": "2026-06-27",
+    "id_pedido": 15
+}
+```
+
+---
+
+## Pagar factura
+
+PUT `/api/v1/facturas-electronicas/{id}`
+
+```json
+{
+    "estado_pago": "Pagada"
+}
+```
+
+---
+
+## Anular factura
+
+PUT `/api/v1/facturas-electronicas/{id}`
+
+```json
+{
+    "estado": "Anulada"
+}
+```
+
+---
+
+# Próximos Módulos
+
+Pendientes o parcialmente implementados:
+
+* Autenticación JWT / Sanctum
+* Roles y permisos
+* Inventario automático por venta
+* Reportería
+* Generación PDF de facturas
+* Dashboard administrativo
+* Cocina en tiempo real
+* Cuentas por cobrar completas
+
+---
+
+# Correr el Proyecto
+
+Instalar dependencias:
 
 ```bash
 composer install
 ```
 
-Configurar el ambiente:
+Configurar entorno:
 
 ```bash
 cp .env.example .env
 ```
 
-Genera la llave de aplicación:
+Generar key:
 
 ```bash
 php artisan key:generate
 ```
 
-Corre las migraciones:
+Ejecutar migraciones:
 
 ```bash
 php artisan migrate
 ```
 
-Inicia el servidor:
+Crear enlace de storage:
+
+```bash
+php artisan storage:link
+```
+
+Levantar servidor:
 
 ```bash
 php artisan serve
@@ -1071,8 +530,8 @@ php artisan serve
 
 ---
 
-## Autores
+# Autores
 
-Arnold Avila - Backend  
-Christopher Arellano - Frontend  
-Derek Lemus - Frontend
+Arnold Avila — Backend
+Christopher Arellano — Frontend
+Derek Lemus — Frontend

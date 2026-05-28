@@ -18,6 +18,9 @@ class ProductoMenuResource extends JsonResource
             'descripcion' => $this->descripcion,
             'precio_venta' => $this->precio_venta,
             'disponible' => $this->disponible,
+            'imagen_url' => $this->imagen
+            ? asset('storage/' . $this->imagen)
+            : null,
 
             // Informacion de la categoria relacionada
             'categoria' => [

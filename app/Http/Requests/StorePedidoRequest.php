@@ -14,16 +14,28 @@ class StorePedidoRequest extends FormRequest
 
     // Reglas de validación para los campos del pedido. Estas reglas aseguran que los datos enviados para crear un nuevo pedido sean válidos y cumplan con los requisitos establecidos antes de ser procesados en el controlador.
     public function rules(): array
-    {
-        return [
-            'estado' => 'required|in:Pendiente,Preparando,Preparado,Entregado,Cancelado',
-            'tipo' => 'required|in:Para Llevar,Para Aca,Online',
-            'total' => 'required|numeric|min:0',
-            'id_mesa' => 'nullable|exists:mesa,id_mesa',
-            'id_cliente' => 'nullable|exists:cliente,id_cliente',
-            'id_empleado' => 'required|exists:empleado,id_empleado'
-        ];
-    }
+{
+    return [
+        'estado' => 'required|in:Pendiente,Preparando,Preparado,Entregado,Cancelado',
+
+        'tipo' => 'required|in:Para Llevar,Para Aca,Online',
+
+        'total' => 'required|numeric|min:0',
+
+        'id_mesa' => 'nullable|exists:mesa,id_mesa',
+
+        'id_cliente' => 'nullable|exists:cliente,id_cliente',
+
+        'id_empleado' => 'required|exists:empleado,id_empleado',
+
+        'direccion_entrega' => 'required_if:tipo,Online|nullable|string|max:255',
+
+        'telefono_contacto' => 'nullable|string|max:25',
+
+        'metodo_pago' =>
+            'required|in:Efectivo,Tarjeta,Transferencia,Credito'
+    ];
+}
 
     public function messages(): array
     {
