@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAsistenciaRequest;
 use App\Http\Requests\UpdateAsistenciaRequest;
 use App\Services\AsistenciaService;
+use Illuminate\Http\Request;
 
 // Controlador para manejar las solicitudes relacionadas con asistencia.
 // Utiliza AsistenciaService para encapsular toda la lógica de negocio.
@@ -27,11 +28,24 @@ class AsistenciaController extends Controller
         );
     }
 
-    // Registrar entrada (Clock In)
-    public function store(StoreAsistenciaRequest $request)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | CLOCK IN
+    |--------------------------------------------------------------------------
+    |
+    | El empleado se obtiene automáticamente desde el token Sanctum.
+    | Ya NO se envía id_empleado desde el frontend.
+    |
+    */
+
+    public function store(
+        StoreAsistenciaRequest $request
+    ) {
+
+        $empleado = $request->user();
+
         $asistencia = $this->service->clockIn(
-            $request->id_empleado
+            $empleado->id_empleado
         );
 
         if (!$asistencia) {
@@ -41,7 +55,10 @@ class AsistenciaController extends Controller
             ], 400);
         }
 
-        return response()->json($asistencia, 201);
+        return response()->json([
+            'message' => 'Entrada registrada correctamente.',
+            'data' => $asistencia
+        ], 201);
     }
 
     // Mostrar asistencia por ID
@@ -59,9 +76,17 @@ class AsistenciaController extends Controller
         return response()->json($asistencia);
     }
 
-    // Registrar salida usando ID de asistencia
-    public function update(UpdateAsistenciaRequest $request, $id)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | CLOCK OUT POR ID ASISTENCIA
+    |--------------------------------------------------------------------------
+    */
+
+    public function update(
+        UpdateAsistenciaRequest $request,
+        $id
+    ) {
+
         $result = $this->service->clockOut($id);
 
         if ($result === false) {
@@ -78,27 +103,41 @@ class AsistenciaController extends Controller
             ], 400);
         }
 
-        return response()->json($result);
-    }
-
-    // Registrar salida usando ID de empleado
-    public function cerrarJornada($id_empleado)
-    {
-        $asistencia = $this->service
-            ->cerrarJornadaPorEmpleado($id_empleado);
-
-        if (!$asistencia) {
-
-            return response()->json([
-                'message' => 'No existe una jornada activa para este empleado.'
-            ], 404);
-        }
-
         return response()->json([
             'message' => 'Salida registrada correctamente.',
-            'data' => $asistencia
+            'data' => $result
         ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CLOCK OUT AUTOMÁTICO POR TOKEN
+    |--------------------------------------------------------------------------
+    |
+    | Ya NO recibe id_empleado.
+    | El empleado se obtiene automáticamente desde Sanctum.
+    |
+    */
+
+    public function cerrarJornada(Request $request)
+{
+    $id_empleado = $request->user()->id_empleado;
+
+    $asistencia = $this->service
+        ->cerrarJornadaPorEmpleado($id_empleado);
+
+    if (!$asistencia) {
+
+        return response()->json([
+            'message' => 'No existe una jornada activa para este empleado.'
+        ], 404);
+    }
+
+    return response()->json([
+        'message' => 'Salida registrada correctamente.',
+        'data' => $asistencia
+    ]);
+}
 
     // Eliminar asistencia
     public function destroy($id)

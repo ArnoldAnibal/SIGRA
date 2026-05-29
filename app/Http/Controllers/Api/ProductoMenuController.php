@@ -31,25 +31,23 @@ class ProductoMenuController extends Controller
      * Crear producto
      */
     public function store(StoreProductoMenuRequest $request)
-    {
+{
+    $data = $request->validated();
 
-    dd(
-        $request->all(),
-        $request->file('imagen'),
-        $request->hasFile('imagen')
-    );
-        $data = $request->validated();
+    // Imagen opcional
+    if ($request->hasFile('imagen')) {
 
-        // Imagen opcional
-        if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('productos', 'public');
-            $data['imagen'] = $path;
-        }
+        $path = $request
+            ->file('imagen')
+            ->store('productos', 'public');
 
-        $producto = $this->service->create($data);
-
-        return new ProductoMenuResource($producto);
+        $data['imagen'] = $path;
     }
+
+    $producto = $this->service->create($data);
+
+    return new ProductoMenuResource($producto);
+}
 
     /**
      * Mostrar producto por ID
@@ -87,7 +85,7 @@ class ProductoMenuController extends Controller
         $data['imagen'] = $path;
     }
 
-    // ✅ ONLY ONE UPDATE CALL
+    
     $productoActualizado = $this->service->update($producto, $data);
 
     return new ProductoMenuResource($productoActualizado);

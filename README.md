@@ -11,6 +11,7 @@ REST API desarrollado con Laravel 13 para la administración integral del restau
 * MariaDB / MySQL
 * XAMPP
 * Composer
+* Laravel Sanctum
 * Laravel Eloquent ORM
 * Laravel Resources
 * Laravel Form Requests
@@ -28,6 +29,7 @@ El proyecto sigue una arquitectura en capas utilizando buenas prácticas de Lara
 app/
 ├── Http/
 │   ├── Controllers/
+│   ├── Middleware/
 │   ├── Requests/
 │   └── Resources/
 ├── Models/
@@ -37,35 +39,264 @@ app/
 
 ---
 
-# Funcionalidades Implementadas
+# Autenticación
 
-## Gestión de Menú
+El sistema utiliza autenticación mediante:
 
-### Categorías de Menú
+```text
+Laravel Sanctum
+```
 
-CRUD completo para categorías.
+---
 
-### Productos del Menú
+# Seguridad Implementada
 
-CRUD completo para productos.
+El backend implementa:
 
-### Nuevas funcionalidades
+* Password hashing mediante bcrypt
+* Tokens API con Laravel Sanctum
+* Middleware de autenticación
+* Middleware de roles
+* Validaciones mediante Form Requests
+* Protección de rutas privadas
+* Soft Deletes
+* Validaciones de acceso por rol
 
-* Soporte para imágenes de productos.
-* Campo `imagen` agregado a `producto_menu`.
-* API retorna `imagen_url` automáticamente.
+---
 
-Ejemplo:
+# Autenticación de Empleados
+
+Los empleados pueden iniciar sesión utilizando:
+
+* username
+* password
+
+---
+
+## Endpoint Login
+
+POST `/api/v1/auth/empleados/login`
+
+Body:
 
 ```json
 {
-    "imagen_url": "http://127.0.0.1:8000/storage/productos/ceviche.jpg"
+    "login": "arnold",
+    "password": "123456"
 }
 ```
 
-### Upload de imágenes
+Respuesta:
 
-Los productos pueden enviarse usando:
+```json
+{
+    "message": "Login exitoso",
+    "token": "TOKEN_AQUI",
+    "empleado": {
+        "id_empleado": 1,
+        "nombre": "Arnold Avila",
+        "rol": "Administrador",
+        "username": "arnold"
+    }
+}
+```
+
+---
+
+## Logout
+
+POST `/api/v1/auth/empleados/logout`
+
+Headers:
+
+```text
+Authorization: Bearer TOKEN
+```
+
+---
+
+## Usuario autenticado
+
+GET `/api/v1/auth/empleados/me`
+
+Headers:
+
+```text
+Authorization: Bearer TOKEN
+```
+
+---
+
+# Roles Implementados
+
+Roles soportados:
+
+* Administrador
+* Mesero
+* Cajero
+* Cocinero
+
+---
+
+# Middleware de Roles
+
+El sistema utiliza:
+
+```text
+role
+```
+
+Ejemplo:
+
+```php
+Route::middleware('role:Administrador')
+```
+
+---
+
+# Seguridad de Endpoints
+
+## Rutas públicas
+
+No requieren autenticación:
+
+* Login
+* Consulta de productos
+* Consulta de categorías
+
+## Rutas protegidas
+
+Requieren:
+
+```text
+Authorization: Bearer TOKEN
+```
+
+Además, algunas rutas requieren roles específicos.
+
+---
+
+# Permisos por Rol
+
+## Administrador
+
+Acceso total:
+
+* Empleados
+* Planillas
+* Productos
+* Categorías
+* Clientes
+* Facturas
+* Pagos
+* Pedidos
+* Mesas
+* Asistencias
+
+---
+
+## Cajero
+
+Acceso:
+
+* Clientes
+* Facturas
+* Pagos
+* Mesas
+* Pedidos
+
+---
+
+## Mesero
+
+Acceso:
+
+* Pedidos
+* Mesas
+* Detalles de pedido
+
+---
+
+## Cocinero
+
+Acceso:
+
+* Actualización de pedidos
+* Consulta de cocina
+
+---
+
+# Gestión de Menú
+
+## Categorías de Menú
+
+CRUD completo para categorías.
+
+---
+
+## Endpoints
+
+GET `/api/v1/categorias-menu`
+
+GET `/api/v1/categorias-menu/{id}`
+
+POST `/api/v1/categorias-menu`
+
+PUT `/api/v1/categorias-menu/{id}`
+
+DELETE `/api/v1/categorias-menu/{id}`
+
+---
+
+## Body Categoría
+
+```json
+{
+    "nombre": "Bebidas"
+}
+```
+
+---
+
+# Productos del Menú
+
+CRUD completo para productos.
+
+---
+
+## Endpoints
+
+GET `/api/v1/productos-menu`
+
+GET `/api/v1/productos-menu/{id}`
+
+POST `/api/v1/productos-menu`
+
+PUT `/api/v1/productos-menu/{id}`
+
+DELETE `/api/v1/productos-menu/{id}`
+
+---
+
+## Body Producto
+
+```json
+{
+    "nombre": "Pizza Suprema",
+    "descripcion": "Pizza grande familiar",
+    "precio": 120.50,
+    "stock": 25,
+    "stock_minimo": 5,
+    "estado": "Disponible",
+    "id_categoria": 1
+}
+```
+
+---
+
+# Upload de imágenes
+
+Los productos aceptan:
 
 ```text
 multipart/form-data
@@ -77,10 +308,18 @@ Campo:
 imagen
 ```
 
-El backend almacena las imágenes en:
+Ruta de almacenamiento:
 
 ```text
 storage/app/public/productos
+```
+
+Respuesta:
+
+```json
+{
+    "imagen_url": "http://127.0.0.1:8000/storage/productos/pizza.jpg"
+}
 ```
 
 ---
@@ -89,12 +328,40 @@ storage/app/public/productos
 
 CRUD completo de mesas.
 
-Estados soportados:
+---
+
+## Estados soportados
 
 * Libre
 * Ocupada
 * Reservada
 * Mantenimiento
+
+---
+
+## Endpoints
+
+GET `/api/v1/mesas`
+
+GET `/api/v1/mesas/{id}`
+
+POST `/api/v1/mesas`
+
+PUT `/api/v1/mesas/{id}`
+
+DELETE `/api/v1/mesas/{id}`
+
+---
+
+## Body Mesa
+
+```json
+{
+    "numero_mesa": 12,
+    "capacidad": 6,
+    "estado": "Libre"
+}
+```
 
 ---
 
@@ -104,49 +371,64 @@ CRUD completo de clientes.
 
 ---
 
-# Crédito Empresarial
-
-Se implementó soporte para clientes empresariales con control de crédito.
-
-## Nuevos campos en cliente
-
-* `tipo_cliente`
-* `limite_credito`
-* `saldo_credito_actual`
-* `estado`
-
-## Tipos de cliente
+## Tipos de Cliente
 
 * Individual
 * Empresa
 
-## Estados empresariales
+---
+
+## Estados
 
 * Activo
 * Suspendido
 
 ---
 
-# Validaciones de Crédito
+## Endpoints
 
-Cuando un pedido usa:
+GET `/api/v1/clientes`
 
-```text
-metodo_pago = Credito
-```
+GET `/api/v1/clientes/{id}`
 
-el sistema valida:
+POST `/api/v1/clientes`
 
-* Que el cliente exista.
-* Que sea tipo Empresa.
-* Que esté Activo.
-* Que tenga suficiente crédito disponible.
+PUT `/api/v1/clientes/{id}`
 
-Si el crédito es insuficiente:
+DELETE `/api/v1/clientes/{id}`
+
+---
+
+## Body Cliente Individual
 
 ```json
 {
-    "message": "Crédito insuficiente."
+    "nombre": "Juan Perez",
+    "telefono": "55554444",
+    "email": "email",
+    "direccion": "Zona 1",
+    "tipo_cliente": "Individual",
+    "estado": "Activo",
+    "username": "juan",
+    "password": "123456"
+}
+```
+
+---
+
+## Body Cliente Empresa
+
+```json
+{
+    "nombre": "Empresa XYZ",
+    "telefono": "22223333",
+    "direccion": "Zona 10",
+    "tipo_cliente": "Empresa",
+    "limite_credito": 10000,
+    "saldo_credito_actual": 0,
+    "estado": "Activo",
+    "username": "empresa_xyz",
+    "password": "123456"
 }
 ```
 
@@ -156,11 +438,15 @@ Si el crédito es insuficiente:
 
 CRUD completo implementado.
 
+---
+
 ## Tipos de pedido
 
 * Para Aca
 * Para Llevar
 * Online
+
+---
 
 ## Estados de pedido
 
@@ -169,6 +455,8 @@ CRUD completo implementado.
 * Preparado
 * Entregado
 * Cancelado
+
+---
 
 ## Métodos de pago
 
@@ -179,49 +467,129 @@ CRUD completo implementado.
 
 ---
 
-# Delivery / Pedidos Online
+## Endpoints
 
-Se agregó soporte para pedidos a domicilio.
+GET `/api/v1/pedidos`
 
-## Nuevos campos
+GET `/api/v1/pedidos/{id}`
 
-* `direccion_entrega`
-* `telefono_contacto`
+POST `/api/v1/pedidos`
 
-## Validaciones
+PUT `/api/v1/pedidos/{id}`
+
+DELETE `/api/v1/pedidos/{id}`
+
+---
+
+## Body Pedido
+
+```json
+{
+    "estado": "Pendiente",
+    "tipo": "Para Aca",
+    "metodo_pago": "Efectivo",
+    "total": 300.00,
+    "id_cliente": 1,
+    "id_empleado": 1
+}
+```
+
+---
+
+## Body Pedido Online
+
+```json
+{
+    "estado": "Pendiente",
+    "tipo": "Online",
+    "metodo_pago": "Tarjeta",
+    "total": 500.00,
+    "direccion_entrega": "Zona 15",
+    "telefono_contacto": "55557777",
+    "id_cliente": 2,
+    "id_empleado": 1
+}
+```
+
+---
+
+# Flujo Operativo de Cocina
+
+## Mesero
+
+Crea pedidos en estado:
+
+```text
+Pendiente
+```
+
+## Cocinero
+
+Actualiza pedidos:
+
+```text
+Preparando
+Preparado
+```
+
+## Cajero
+
+Finaliza pedidos:
+
+```text
+Entregado
+```
+
+---
+
+# Validaciones de Crédito
 
 Cuando:
 
 ```text
-tipo = Online
+metodo_pago = Credito
 ```
 
-el campo:
+El sistema valida:
 
-```text
-direccion_entrega
-```
-
-es obligatorio.
+* Cliente existente
+* Cliente tipo Empresa
+* Estado Activo
+* Crédito disponible
 
 ---
 
-# Tracking de Pedidos
+# Gestión de Detalle Pedido
 
-El backend ya soporta tracking de pedidos mediante el campo:
+CRUD completo implementado.
 
-```text
-estado
+---
+
+## Endpoints
+
+GET `/api/v1/detalles-pedido`
+
+GET `/api/v1/detalles-pedido/{id}`
+
+POST `/api/v1/detalles-pedido`
+
+PUT `/api/v1/detalles-pedido/{id}`
+
+DELETE `/api/v1/detalles-pedido/{id}`
+
+---
+
+## Body
+
+```json
+{
+    "cantidad": 2,
+    "precio_unitario": 50,
+    "subtotal": 100,
+    "id_pedido": 1,
+    "id_producto": 3
+}
 ```
-
-Los cocineros pueden consultar únicamente pedidos:
-
-```text
-Pendiente
-Preparando
-```
-
-Esto permite construir fácilmente una pantalla de cocina en frontend.
 
 ---
 
@@ -229,10 +597,14 @@ Esto permite construir fácilmente una pantalla de cocina en frontend.
 
 CRUD completo implementado.
 
+---
+
 ## Estados de factura
 
 * Emitida
 * Anulada
+
+---
 
 ## Estados de pago
 
@@ -241,125 +613,137 @@ CRUD completo implementado.
 
 ---
 
-# Facturación a Crédito
+## Endpoints
 
-Se agregó soporte para facturas empresariales a crédito.
+GET `/api/v1/facturas-electronicas`
 
-## Nuevos campos
+GET `/api/v1/facturas-electronicas/{id}`
 
-* `estado_pago`
-* `fecha_vencimiento`
-* `fecha_pago`
-* `id_cliente_deudor`
-* `metodo_pago`
+POST `/api/v1/facturas-electronicas`
 
-## Flujo implementado
+PUT `/api/v1/facturas-electronicas/{id}`
 
-Cuando la factura:
+DELETE `/api/v1/facturas-electronicas/{id}`
 
-```text
-metodo_pago = Credito
+---
+
+## Body Factura
+
+```json
+{
+    "uuid_sat": "550e8400-e29b-41d4-a716-446655440000",
+    "fecha_emision": "2026-05-27 12:00:00",
+    "nit_receptor": "1234567-8",
+    "monto_total": 300.00,
+    "estado": "Emitida",
+    "metodo_pago": "Credito",
+    "estado_pago": "Pendiente",
+    "id_cliente_deudor": 16,
+    "fecha_vencimiento": "2026-06-27",
+    "id_pedido": 15
+}
 ```
 
-el sistema:
-
-* Marca la factura como `Pendiente`
-* Guarda fecha de vencimiento
-* Relaciona el cliente deudor
-
 ---
 
-# Pago de Facturas
-
-Cuando una factura cambia:
-
-```text
-estado_pago = Pagada
-```
-
-el sistema:
-
-* Registra automáticamente:
-
-  * `fecha_pago`
-* Reduce automáticamente:
-
-  * `saldo_credito_actual`
-
-del cliente empresarial.
-
----
-
-# Anulación de Facturas
-
-Cuando una factura cambia:
-
-```text
-estado = Anulada
-```
-
-el sistema:
-
-* Revierte automáticamente el crédito utilizado.
-* Reduce el saldo pendiente del cliente.
-
----
-
-# Inventario
-
-Se inició el módulo de inventario.
-
-## Tabla implementada
-
-```text
-inventario_movimiento
-```
-
-## Objetivo
-
-Registrar:
-
-* Entradas
-* Salidas
-* Ajustes
-* Consumo de cocina
-
----
-
-# Cuentas por Pagar
-
-Se agregaron tablas para:
-
-* `proveedor`
-* `cuentas_por_pagar`
-
-Esto permitirá manejar:
-
-* Deudas con proveedores
-* Compras
-* Pagos pendientes
-
----
-
-# Recursos Humanos
-
-## Empleados
+# Gestión de Pagos
 
 CRUD completo implementado.
 
-Roles soportados:
+---
 
-* Administrador
-* Mesero
-* Cajero
-* Recepcionista
-* Cocinero
+## Endpoints
+
+GET `/api/v1/pagos`
+
+GET `/api/v1/pagos/{id}`
+
+POST `/api/v1/pagos`
+
+PUT `/api/v1/pagos/{id}`
+
+DELETE `/api/v1/pagos/{id}`
+
+---
+
+## Body Pago
+
+```json
+{
+    "monto": 300,
+    "metodo_pago": "Transferencia",
+    "fecha_pago": "2026-05-28",
+    "id_factura": 1
+}
+```
+
+---
+
+# Gestión de Empleados
+
+CRUD completo implementado.
+
+---
+
+## Endpoints
+
+GET `/api/v1/empleados`
+
+GET `/api/v1/empleados/{id}`
+
+POST `/api/v1/empleados`
+
+PUT `/api/v1/empleados/{id}`
+
+DELETE `/api/v1/empleados/{id}`
+
+---
+
+## Body Empleado
+
+```json
+{
+    "nombre": "Carlos Perez",
+    "rol": "Cajero",
+    "username": "carlos",
+    "password": "123456"
+}
+```
 
 ---
 
 # Planilla
 
 CRUD completo implementado.
+
+---
+
+## Endpoints
+
+GET `/api/v1/planillas`
+
+GET `/api/v1/planillas/{id}`
+
+POST `/api/v1/planillas`
+
+PUT `/api/v1/planillas/{id}`
+
+DELETE `/api/v1/planillas/{id}`
+
+---
+
+## Body Planilla
+
+```json
+{
+    "fecha_inicio": "2026-05-01",
+    "fecha_fin": "2026-05-15",
+    "salario_base": 4500,
+    "bonificacion": 250,
+    "descuento": 100,
+    "id_empleado": 2
+}
+```
 
 ---
 
@@ -370,10 +754,161 @@ Sistema funcional de:
 * Clock In
 * Clock Out
 
-Validaciones implementadas:
+---
 
-* No múltiples jornadas activas.
-* Finalización automática de jornada.
+## Características
+
+El sistema de asistencia funciona automáticamente utilizando:
+
+```text
+Laravel Sanctum
+```
+
+El empleado autenticado se obtiene desde el token:
+
+```text
+Authorization: Bearer TOKEN
+```
+
+Ya NO es necesario enviar:
+
+```text
+id_empleado
+```
+
+desde el frontend.
+
+---
+
+## Validaciones
+
+* No múltiples jornadas activas
+* Finalización automática de jornada
+* Clock In automático con fecha/hora del servidor
+* Clock Out automático con hora del servidor
+* Identificación automática mediante token
+
+---
+
+## Endpoints
+
+GET `/api/v1/asistencias`
+
+GET `/api/v1/asistencias/{id}`
+
+POST `/api/v1/asistencias`
+
+PUT `/api/v1/asistencias/{id}`
+
+DELETE `/api/v1/asistencias/{id}`
+
+---
+
+# Clock In
+
+POST `/api/v1/asistencias`
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+## Body
+
+```json
+{}
+```
+
+---
+
+## Respuesta
+
+```json
+{
+    "message": "Entrada registrada correctamente.",
+    "data": {
+        "id_asistencia": 1,
+        "id_empleado": 2,
+        "fecha": "2026-05-28",
+        "hora_entrada": "08:00:00",
+        "hora_salida": null,
+        "estado": "Activa"
+    }
+}
+```
+
+---
+
+# Clock Out Automático
+
+PUT `/api/v1/asistencias/cerrar-jornada`
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+## Body
+
+```json
+{}
+```
+
+---
+
+## Respuesta
+
+```json
+{
+    "message": "Salida registrada correctamente.",
+    "data": {
+        "id_asistencia": 1,
+        "hora_salida": "17:00:00",
+        "estado": "Finalizada"
+    }
+}
+```
+
+
+# Inventario
+
+## Tabla Implementada
+
+```text
+inventario_movimiento
+```
+
+---
+
+## Objetivo
+
+Registrar:
+
+* Entradas
+* Salidas
+* Ajustes
+* Consumo cocina
+
+---
+
+# Cuentas por Pagar
+
+Tablas implementadas:
+
+* proveedor
+* cuentas_por_pagar
+
+---
+
+# Eliminación Lógica
+
+Los módulos con Soft Deletes:
+
+* no eliminan físicamente los registros
+* permiten recuperación futura
+* mantienen trazabilidad histórica
 
 ---
 
@@ -401,96 +936,58 @@ Todas las rutas utilizan:
 /api/v1/
 ```
 
-Ejemplos:
+---
+
+# Headers Requeridos
+
+Para rutas protegidas:
 
 ```text
-/api/v1/productos-menu
-/api/v1/pedidos
-/api/v1/facturas-electronicas
+Authorization: Bearer TOKEN
 ```
 
 ---
 
-# Endpoints Importantes
+# Códigos HTTP Utilizados
 
-## Crear pedido a crédito
-
-POST `/api/v1/pedidos`
-
-```json
-{
-    "estado": "Pendiente",
-    "tipo": "Para Aca",
-    "metodo_pago": "Credito",
-    "total": 300.00,
-    "id_cliente": 16,
-    "id_empleado": 1
-}
-```
+| Código | Significado           |
+| ------ | --------------------- |
+| 200    | OK                    |
+| 201    | Recurso creado        |
+| 401    | No autenticado        |
+| 403    | No autorizado         |
+| 404    | Recurso no encontrado |
+| 422    | Error de validación   |
+| 500    | Error interno         |
 
 ---
 
-## Crear factura a crédito
+# Convenciones REST
 
-POST `/api/v1/facturas-electronicas`
-
-```json
-{
-    "uuid_sat": "550e8400-e29b-41d4-a716-446655440000",
-    "fecha_emision": "2026-05-27 12:00:00",
-    "nit_receptor": "1234567-8",
-    "monto_total": 300.00,
-    "estado": "Emitida",
-    "metodo_pago": "Credito",
-    "estado_pago": "Pendiente",
-    "id_cliente_deudor": 16,
-    "fecha_vencimiento": "2026-06-27",
-    "id_pedido": 15
-}
-```
-
----
-
-## Pagar factura
-
-PUT `/api/v1/facturas-electronicas/{id}`
-
-```json
-{
-    "estado_pago": "Pagada"
-}
-```
-
----
-
-## Anular factura
-
-PUT `/api/v1/facturas-electronicas/{id}`
-
-```json
-{
-    "estado": "Anulada"
-}
-```
+| Método | Acción     |
+| ------ | ---------- |
+| GET    | Consultar  |
+| POST   | Crear      |
+| PUT    | Actualizar |
+| DELETE | Eliminar   |
 
 ---
 
 # Próximos Módulos
 
-Pendientes o parcialmente implementados:
+Pendientes:
 
-* Autenticación JWT / Sanctum
-* Roles y permisos
 * Inventario automático por venta
-* Reportería
-* Generación PDF de facturas
 * Dashboard administrativo
+* PDF de facturas
 * Cocina en tiempo real
-* Cuentas por cobrar completas
+* Reportería
+* Cuentas por cobrar
+* Auditoría de acciones
 
 ---
 
-# Correr el Proyecto
+# Instalación
 
 Instalar dependencias:
 
@@ -498,31 +995,41 @@ Instalar dependencias:
 composer install
 ```
 
-Configurar entorno:
+---
+
+## Configurar entorno
 
 ```bash
 cp .env.example .env
 ```
 
-Generar key:
+---
+
+## Generar key
 
 ```bash
 php artisan key:generate
 ```
 
-Ejecutar migraciones:
+---
+
+## Ejecutar migraciones
 
 ```bash
 php artisan migrate
 ```
 
-Crear enlace de storage:
+---
+
+## Storage Link
 
 ```bash
 php artisan storage:link
 ```
 
-Levantar servidor:
+---
+
+## Levantar servidor
 
 ```bash
 php artisan serve
@@ -533,5 +1040,7 @@ php artisan serve
 # Autores
 
 Arnold Avila — Backend
+
 Christopher Arellano — Frontend
+
 Derek Lemus — Frontend

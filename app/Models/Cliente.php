@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
-class Cliente extends Model
+class Cliente extends Authenticatable
 {
-    use SoftDeletes;
+    use HasApiTokens, SoftDeletes;
 
     protected $table = 'cliente';
 
@@ -28,7 +29,8 @@ class Cliente extends Model
     ];
 
     protected $hidden = [
-        'password'
+        'password',
+        'remember_token'
     ];
 
     protected $casts = [
@@ -36,9 +38,18 @@ class Cliente extends Model
         'saldo_credito_actual' => 'decimal:2'
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONES
+    |--------------------------------------------------------------------------
+    */
+
     public function pedidos()
     {
-        return $this->hasMany(Pedido::class, 'id_cliente');
+        return $this->hasMany(
+            Pedido::class,
+            'id_cliente'
+        );
     }
 
     public function facturasCredito()

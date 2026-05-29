@@ -19,7 +19,7 @@ class ClienteService
         return $this->clienteRepository->getAll();
     }
 
-    public function findById($id)
+    public function findById(int $id)
     {
         return $this->clienteRepository->findById($id);
     }
@@ -28,18 +28,17 @@ class ClienteService
     {
         $data['password'] = Hash::make($data['password']);
 
-        if (!isset($data['saldo_credito_actual'])) {
-            $data['saldo_credito_actual'] = 0;
-        }
-
-        if (!isset($data['limite_credito'])) {
-            $data['limite_credito'] = 0;
-        }
+        $data['saldo_credito_actual'] = $data['saldo_credito_actual'] ?? 0;
+        $data['limite_credito'] = $data['limite_credito'] ?? 0;
 
         return $this->clienteRepository->create($data);
     }
 
-    public function update($id, array $data)
+    /**
+     * FIXED:
+     * Now ONLY accepts ID, NOT model
+     */
+    public function update(int $id, array $data)
     {
         $cliente = $this->clienteRepository->findById($id);
 
@@ -54,7 +53,11 @@ class ClienteService
         return $this->clienteRepository->update($cliente, $data);
     }
 
-    public function delete($id)
+    /**
+     * FIXED:
+     * Now ONLY accepts ID, NOT model
+     */
+    public function delete(int $id)
     {
         $cliente = $this->clienteRepository->findById($id);
 
