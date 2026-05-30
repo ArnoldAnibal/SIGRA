@@ -19,6 +19,7 @@ class Pago extends Model
         'fecha_pago'
     ];
 
+    // Relación muchos a uno con el modelo FacturaElectronica. Un pago pertenece a una factura electrónica, pero una factura electrónica puede tener muchos pagos. La relación se establece utilizando la clave foránea "id_factura" en la tabla "pago" que hace referencia a la clave primaria "id_factura" en la tabla "factura_electronica".
     public function factura()
     {
         return $this->belongsTo(

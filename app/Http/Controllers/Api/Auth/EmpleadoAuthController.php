@@ -7,6 +7,7 @@ use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+// Controlador para manejar las solicitudes relacionadas con la autenticación de empleados. Este controlador incluye métodos para el login, logout y obtener los datos del empleado autenticado. Utiliza el modelo Empleado para interactuar con la base de datos y el sistema de autenticación de Laravel Sanctum para manejar los tokens de acceso. El método login permite a los empleados iniciar sesión utilizando su nombre de usuario junto con su contraseña, mientras que el método logout revoca el token de acceso actual del empleado. El método me devuelve los datos del empleado autenticado actualmente.
 class EmpleadoAuthController extends Controller
 {
     /**

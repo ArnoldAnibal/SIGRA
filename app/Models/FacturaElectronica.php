@@ -29,16 +29,19 @@ class FacturaElectronica extends Model
         'fecha_pago'
     ];
 
+    // Relación muchos a uno con el modelo Pedido. Una factura electrónica pertenece a un pedido, pero un pedido puede tener muchas facturas electrónicas. La relación se establece utilizando la clave foránea "id_pedido" en la tabla "factura_electronica" que hace referencia a la clave primaria "id_pedido" en la tabla "pedido".
     public function pedido()
     {
         return $this->belongsTo(Pedido::class, 'id_pedido');
     }
 
+    // Relación muchos a uno con el modelo Cliente. Una factura electrónica puede tener un cliente deudor asociado, pero un cliente puede ser deudor en muchas facturas electrónicas. La relación se establece utilizando la clave foránea "id_cliente_deudor" en la tabla "factura_electronica" que hace referencia a la clave primaria "id_cliente" en la tabla "cliente".
     public function clienteDeudor()
     {
         return $this->belongsTo(Cliente::class, 'id_cliente_deudor');
     }
 
+    // Relación uno a muchos con el modelo Pago. Una factura electrónica puede tener muchos pagos asociados, pero cada pago pertenece a una sola factura electrónica. La relación se establece utilizando la clave foránea "id_factura" en la tabla "pago" que hace referencia a la clave primaria "id_factura" en la tabla "factura_electronica".
     public function pagos()
     {
         return $this->hasMany(Pago::class, 'id_factura');

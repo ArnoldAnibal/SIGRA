@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProductoMenuRequest;
 use App\Http\Resources\ProductoMenuResource;
 use App\Services\ProductoMenuService;
 
+// Controlador para gestionar los productos del menú. Este controlador maneja las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los productos del menú en la aplicación. Utiliza el servicio ProductoMenuService para interactuar con la lógica de negocio relacionada con los productos del menú y los recursos ProductoMenuResource para transformar los datos del modelo ProductoMenu en un formato adecuado para las respuestas de la API. 
 class ProductoMenuController extends Controller
 {
     protected $service;

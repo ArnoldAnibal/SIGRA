@@ -24,6 +24,8 @@ class UpdatePedidoRequest extends FormRequest
             'metodo_pago' => 'sometimes|in:Efectivo,Tarjeta,Transferencia,Credito'
         ];
     }
+
+    // Mensajes de error personalizados para las reglas de validación. Este método devuelve un arreglo de mensajes de error personalizados que se mostrarán cuando una regla de validación falle. Por ejemplo, si el campo "estado" no es uno de los valores permitidos, se mostrará el mensaje "El estado debe ser: Pendiente, Preparando, Preparado, Entregado o Cancelado.". Al definir estos mensajes personalizados, se proporciona una retroalimentación más clara y específica a los usuarios sobre los errores de validación en sus solicitudes.
     public function messages(): array
     {
         return [

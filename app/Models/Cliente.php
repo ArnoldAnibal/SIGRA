@@ -45,6 +45,8 @@ class Cliente extends Authenticatable
     |--------------------------------------------------------------------------
     */
 
+    // Relación uno a muchos con el modelo Pedido. Un cliente puede tener muchos pedidos, pero cada pedido pertenece a un solo cliente. La relación se establece utilizando la clave foránea "id_cliente" en la tabla "pedido" que hace referencia a la clave primaria "id_cliente" en la tabla "cliente".
+
     public function pedidos()
     {
         return $this->hasMany(
@@ -53,6 +55,7 @@ class Cliente extends Authenticatable
         );
     }
 
+    // Relación uno a muchos con el modelo FacturaElectronica. Un cliente puede ser deudor en muchas facturas electrónicas, pero cada factura electrónica tiene un solo cliente deudor. La relación se establece utilizando la clave foránea "id_cliente_deudor" en la tabla "factura_electronica" que hace referencia a la clave primaria "id_cliente" en la tabla "cliente".
     public function facturasCredito()
     {
         return $this->hasMany(
@@ -61,6 +64,7 @@ class Cliente extends Authenticatable
         );
     }
 
+    // Relación uno a muchos con el modelo ClienteMetodoPago. Un cliente puede tener muchos métodos de pago, pero cada método de pago pertenece a un solo cliente. La relación se establece utilizando la clave foránea "id_cliente" en la tabla "cliente_metodo_pago" que hace referencia a la clave primaria "id_cliente" en la tabla "cliente".
     public function metodosPago()
     {
         return $this->hasMany(

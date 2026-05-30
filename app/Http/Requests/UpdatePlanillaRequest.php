@@ -12,6 +12,7 @@ class UpdatePlanillaRequest extends FormRequest
         return true;
     }
 
+    // Reglas de validación para actualizar una planilla. Estas reglas definen los requisitos que deben cumplir los datos enviados en la solicitud para actualizar una planilla, como el tipo de datos, la longitud máxima y si el campo es opcional o requerido. Al utilizar este request, se asegura que los datos enviados para actualizar una planilla cumplan con las reglas de validación definidas antes de procesarlos en el controlador.
     public function rules(): array
     {
         return [

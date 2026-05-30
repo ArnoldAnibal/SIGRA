@@ -32,6 +32,7 @@ class DetallePedidoService
         return $this->repository->findById($id);
     }
 
+    // Método para crear un nuevo detalle de pedido. Recibe un array de datos, verifica que el producto exista y actualiza el stock del producto según el tipo de movimiento (Entrada o Salida). Si el tipo es "Salida", también verifica que el stock sea suficiente antes de realizar la operación. Finalmente, utiliza el método create del repositorio para crear el detalle de pedido en la base de datos y devuelve el detalle de pedido creado. Además, se actualiza el total del pedido asociado al detalle de pedido después de crear el nuevo detalle de pedido. Toda esta operación se realiza dentro de una transacción de base de datos para garantizar la integridad de los datos en caso de que ocurra algún error durante el proceso.
     public function create(array $data)
 {
     return DB::transaction(function () use ($data) {

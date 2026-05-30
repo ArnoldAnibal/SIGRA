@@ -34,6 +34,7 @@ class ProductoMenu extends Model
         );
     }
 
+// Relación uno a muchos con el modelo InventarioMovimiento. Un producto puede tener muchos movimientos de inventario, pero cada movimiento de inventario pertenece a un solo producto. La relación se establece utilizando la clave foránea "id_producto" en la tabla "inventario_movimiento" que hace referencia a la clave primaria "id_producto" en la tabla "producto_menu".
     public function movimientosInventario()
 {
     return $this->hasMany(

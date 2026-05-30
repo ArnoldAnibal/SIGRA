@@ -20,6 +20,7 @@ class CuentaPorPagar extends Model
         'fecha_vencimiento'
     ];
 
+    // Relación muchos a uno con el modelo Proveedor. Una cuenta por pagar pertenece a un proveedor, pero un proveedor puede tener muchas cuentas por pagar. La relación se establece utilizando la clave foránea "id_proveedor" en la tabla "cuenta_por_pagar" que hace referencia a la clave primaria "id_proveedor" en la tabla "proveedor".
     public function proveedor()
     {
         return $this->belongsTo(

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Cliente;
 
+// Controlador para manejar las solicitudes relacionadas con la autenticación de clientes. Este controlador incluye métodos para el login, logout y obtener los datos del cliente autenticado. Utiliza el modelo Cliente para interactuar con la base de datos y el sistema de autenticación de Laravel Sanctum para manejar los tokens de acceso. El método login permite a los clientes iniciar sesión utilizando su nombre de usuario o correo electrónico junto con su contraseña, mientras que el método logout revoca el token de acceso actual del cliente. El método me devuelve los datos del cliente autenticado actualmente.
 class ClienteAuthController extends Controller
 {
     /*

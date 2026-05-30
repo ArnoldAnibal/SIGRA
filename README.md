@@ -893,14 +893,6 @@ Registrar:
 
 ---
 
-# Cuentas por Pagar
-
-Tablas implementadas:
-
-* proveedor
-* cuentas_por_pagar
-
----
 
 # Eliminación Lógica
 
@@ -973,18 +965,335 @@ Authorization: Bearer TOKEN
 
 ---
 
-# Próximos Módulos
+---
 
-Pendientes:
+# Métodos de Pago del Cliente
 
-* Inventario automático por venta
-* Dashboard administrativo
-* PDF de facturas
-* Cocina en tiempo real
-* Reportería
-* Cuentas por cobrar
-* Auditoría de acciones
+CRUD completo implementado.
 
+---
+
+## Tabla
+
+```text
+cliente_metodo_pago
+```
+
+---
+
+## Objetivo
+
+Permitir almacenar métodos de pago asociados a clientes registrados.
+
+---
+
+## Endpoints
+
+GET `/api/v1/cliente-metodos-pago`
+
+GET `/api/v1/cliente-metodos-pago/{id}`
+
+POST `/api/v1/cliente-metodos-pago`
+
+PUT `/api/v1/cliente-metodos-pago/{id}`
+
+DELETE `/api/v1/cliente-metodos-pago/{id}`
+
+---
+
+## Body
+
+```json
+{
+    "id_cliente": 1,
+    "tipo_metodo": "Tarjeta",
+    "titular": "Juan Perez",
+    "ultimos_4": "1234",
+    "token_pasarela": "tok_test_123",
+    "activo": true
+}
+```
+
+---
+
+# Gestión de Proveedores
+
+CRUD completo implementado.
+
+---
+
+## Tabla
+
+```text
+proveedor
+```
+
+---
+
+## Endpoints
+
+GET `/api/v1/proveedores`
+
+GET `/api/v1/proveedores/{id}`
+
+POST `/api/v1/proveedores`
+
+PUT `/api/v1/proveedores/{id}`
+
+DELETE `/api/v1/proveedores/{id}`
+
+---
+
+## Body
+
+```json
+{
+    "nombre": "Distribuidora Central",
+    "telefono": "55555555",
+    "direccion": "Zona 1"
+}
+```
+
+---
+
+# Gestión de Cuentas por Pagar
+
+CRUD completo implementado.
+
+---
+
+## Tabla
+
+```text
+cuenta_por_pagar
+```
+
+---
+
+## Estados
+
+* Pendiente
+* Pagado
+
+---
+
+## Endpoints
+
+GET `/api/v1/cuentas-por-pagar`
+
+GET `/api/v1/cuentas-por-pagar/{id}`
+
+POST `/api/v1/cuentas-por-pagar`
+
+PUT `/api/v1/cuentas-por-pagar/{id}`
+
+DELETE `/api/v1/cuentas-por-pagar/{id}`
+
+---
+
+## Body
+
+```json
+{
+    "id_proveedor": 1,
+    "monto": 500.00,
+    "descripcion": "Compra de insumos",
+    "estado": "Pendiente",
+    "fecha_vencimiento": "2026-09-01"
+}
+```
+
+---
+
+# Gestión de Inventario
+
+CRUD completo implementado.
+
+---
+
+## Tabla
+
+```text
+inventario_movimiento
+```
+
+---
+
+## Tipos de Movimiento
+
+* Entrada
+* Salida
+
+---
+
+## Endpoints
+
+GET `/api/v1/inventario-movimientos`
+
+GET `/api/v1/inventario-movimientos/{id}`
+
+POST `/api/v1/inventario-movimientos`
+
+PUT `/api/v1/inventario-movimientos/{id}`
+
+DELETE `/api/v1/inventario-movimientos/{id}`
+
+---
+
+## Body
+
+```json
+{
+    "id_producto": 1,
+    "tipo": "Entrada",
+    "cantidad": 10,
+    "motivo": "Reposición de stock"
+}
+```
+
+---
+
+# Reglas Automáticas de Inventario
+
+Al registrar un movimiento:
+
+## Entrada
+
+```text
+stock = stock + cantidad
+```
+
+## Salida
+
+```text
+stock = stock - cantidad
+```
+
+---
+
+## Validaciones
+
+El sistema valida:
+
+* Producto existente
+* Cantidad mayor a cero
+* Stock suficiente para salidas
+
+---
+
+# Productos e Inventario
+
+Actualmente cada registro de:
+
+```text
+producto_menu
+```
+
+representa un producto terminado o plato listo para venta.
+
+Ejemplos:
+
+* Pizza Suprema
+* Hamburguesa Clásica
+* Lasaña
+* Café Latte
+
+El inventario actual controla existencias de productos terminados.
+
+No se administra aún inventario de ingredientes individuales.
+
+---
+
+# Reglas Automáticas de Pago
+
+Al registrar un pago:
+
+El sistema valida:
+
+* Factura existente
+* Factura no anulada
+* Monto mayor a cero
+
+---
+
+## Facturas a Crédito
+
+Cuando la factura pertenece a un cliente empresa:
+
+```text
+metodo_pago = Credito
+```
+
+el sistema:
+
+* Reduce automáticamente el saldo de crédito utilizado.
+* Actualiza el estado de pago de la factura.
+
+---
+
+## Estado de Pago Automático
+
+Si:
+
+```text
+total_pagado >= monto_total
+```
+
+la factura cambia a:
+
+```text
+Pagada
+```
+
+De lo contrario permanece:
+
+```text
+Pendiente
+```
+
+---
+
+# Endpoints Especiales para Clientes
+
+Disponibles para clientes autenticados.
+
+---
+
+## Perfil
+
+GET `/api/v1/clientes/me`
+
+---
+
+## Mis Pedidos
+
+GET `/api/v1/clientes/mis-pedidos`
+
+---
+
+## Mis Facturas
+
+GET `/api/v1/clientes/mis-facturas`
+
+---
+
+## Estado de Crédito
+
+GET `/api/v1/clientes/credito`
+
+---
+
+## Respuesta
+
+```json
+{
+    "limite_credito": 10000,
+    "saldo_credito_actual": 2500,
+    "credito_disponible": 7500
+}
+```
+
+---
 ---
 
 # Instalación

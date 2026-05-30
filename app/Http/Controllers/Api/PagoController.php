@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePagoRequest;
 use App\Http\Resources\PagoResource;
 use App\Services\PagoService;
 
+// Controlador para gestionar los pagos. Este controlador maneja las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los pagos en la aplicación. Utiliza el servicio PagoService para interactuar con la lógica de negocio relacionada con los pagos y los recursos PagoResource para transformar los datos del modelo Pago en un formato adecuado para las respuestas de la API. El controlador también utiliza StorePagoRequest y UpdatePagoRequest para validar los datos enviados al crear o actualizar un pago, respectivamente. 
 class PagoController extends Controller
 {
     protected $service;

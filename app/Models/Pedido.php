@@ -27,16 +27,19 @@ class Pedido extends Model
         'metodo_pago'
     ];
 
+    // Relación muchos a uno con el modelo Cliente. Un pedido pertenece a un cliente, pero un cliente puede tener muchos pedidos. La relación se establece utilizando la clave foránea "id_cliente" en la tabla "pedido" que hace referencia a la clave primaria "id_cliente" en la tabla "cliente".
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'id_cliente');
     }
 
+    // Relación uno a uno con el modelo FacturaElectronica. Un pedido tiene una factura electrónica asociada, y cada factura electrónica pertenece a un solo pedido. La relación se establece utilizando la clave foránea "id_pedido" en la tabla "factura_electronica" que hace referencia a la clave primaria "id_pedido" en la tabla "pedido".
     public function factura()
     {
         return $this->hasOne(FacturaElectronica::class, 'id_pedido');
     }
 
+    // Relación uno a muchos con el modelo DetallePedido. Un pedido puede tener muchos detalles de pedido, pero cada detalle de pedido pertenece a un solo pedido. La relación se establece utilizando la clave foránea "id_pedido" en la tabla "detalle_pedido" que hace referencia a la clave primaria "id_pedido" en la tabla "pedido".
     public function detalles()
     {
         return $this->hasMany(DetallePedido::class, 'id_pedido');

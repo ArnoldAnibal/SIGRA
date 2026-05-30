@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateClienteMetodoPagoRequest;
 use App\Http\Resources\ClienteMetodoPagoResource;
 use App\Services\ClienteMetodoPagoService;
 
-// Controlador para gestionar los métodos de pago de los clientes
+// Controlador para gestionar los métodos de pago de los clientes. Este controlador maneja las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los métodos de pago de los clientes en la aplicación. Utiliza el servicio ClienteMetodoPagoService para interactuar con la lógica de negocio relacionada con los métodos de pago de los clientes y los recursos ClienteMetodoPagoResource para transformar los datos del modelo ClienteMetodoPago en un formato adecuado para las respuestas de la API. El controlador también utiliza StoreClienteMetodoPagoRequest y UpdateClienteMetodoPagoRequest para validar los datos enviados al crear o actualizar un método de pago de cliente, respectivamente.
 class ClienteMetodoPagoController extends Controller
 {
     protected $service;

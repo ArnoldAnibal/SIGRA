@@ -20,6 +20,7 @@ class ClienteMetodoPago extends Model
         'activo'
     ];
 
+    // Relación muchos a uno con el modelo Cliente. Un método de pago pertenece a un cliente, pero un cliente puede tener muchos métodos de pago. La relación se establece utilizando la clave foránea "id_cliente" en la tabla "cliente_metodo_pago" que hace referencia a la clave primaria "id_cliente" en la tabla "cliente".
     public function cliente()
     {
         return $this->belongsTo(
