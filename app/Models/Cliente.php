@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 
+// Modelo para la tabla "cliente" con los campos "id_cliente", "nombre", "nit", "direccion", "tipo_cliente", "username", "password", "email", "telefono", "limite_credito", "saldo_credito_actual" y "estado". El campo "id_cliente" es la clave primaria y se autoincrementa. El modelo utiliza soft deletes para permitir la eliminación lógica de los registros. Además, se definen los campos que se pueden asignar masivamente a través de $fillable, así como los campos ocultos y los casts para los campos numéricos.
 class Cliente extends Authenticatable
 {
     use HasApiTokens, SoftDeletes;

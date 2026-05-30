@@ -6,23 +6,31 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateClienteMetodoPagoRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'id_cliente' =>
+                'required|exists:cliente,id_cliente',
+
+            'tipo_metodo' =>
+                'required|string|max:50',
+
+            'titular' =>
+                'required|string|max:150',
+
+            'ultimos_4' =>
+                'nullable|string|max:4',
+
+            'token_pasarela' =>
+                'nullable|string|max:255',
+
+            'activo' =>
+                'required|boolean'
         ];
     }
 }

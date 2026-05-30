@@ -1,6 +1,11 @@
 <?php
 
 namespace App\Services;
+use App\Models\ProductoMenu;
+use App\Models\InventarioMovimiento;
+use App\Models\Pedido;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 use App\Repositories\DetallePedidoRepository;
 
@@ -27,12 +32,68 @@ class DetallePedidoService
         return $this->repository->findById($id);
     }
 
-    // Método para crear un nuevo detalle de pedido. Recibe un array de datos, utiliza el método create del repositorio para crear el detalle de pedido en la base de datos y devuelve el detalle de pedido creado.
     public function create(array $data)
-    {
-        return $this->repository->create($data);
-    }
+{
+    return DB::transaction(function () use ($data) {
 
+        $producto = ProductoMenu::find(
+            $data['id_producto']
+        );
+
+        if (!$producto) {
+            throw new Exception(
+                'Producto no encontrado'
+            );
+        }
+
+        if (
+            $producto->stock <
+            $data['cantidad']
+        ) {
+            throw new Exception(
+                'Stock insuficiente para el producto: '
+                . $producto->nombre
+            );
+        }
+
+        $data['subtotal'] =
+            $producto->precio_venta *
+            $data['cantidad'];
+
+        $detalle =
+            $this->repository->create($data);
+
+        $producto->stock =
+            $producto->stock -
+            $data['cantidad'];
+
+        $producto->save();
+
+        InventarioMovimiento::create([
+            'id_producto' => $producto->id_producto,
+            'tipo' => 'Salida',
+            'cantidad' => $data['cantidad'],
+            'motivo' =>
+                'Pedido #' .
+                $data['id_pedido']
+        ]);
+
+        $pedido = Pedido::find(
+            $data['id_pedido']
+        );
+
+        if ($pedido) {
+
+            $pedido->total =
+                $pedido->detalles()
+                    ->sum('subtotal');
+
+            $pedido->save();
+        }
+
+        return $detalle;
+    });
+}
     // Método para actualizar un detalle de pedido existente. Recibe el detalle de pedido a actualizar y un array de datos con los nuevos valores, utiliza el método update del repositorio para actualizar el detalle de pedido en la base de datos y devuelve el detalle de pedido actualizado.
     public function update($detalle, array $data)
     {

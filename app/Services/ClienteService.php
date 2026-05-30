@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\ClienteRepository;
 use Illuminate\Support\Facades\Hash;
 
+// Servicio para gestionar las operaciones relacionadas con los clientes, utilizando el repositorio ClienteRepository para realizar las operaciones de acceso a datos. Este servicio proporciona métodos para obtener todos los clientes, encontrar un cliente por su ID, crear un nuevo cliente, actualizar un cliente existente y eliminar un cliente.
 class ClienteService
 {
     protected $clienteRepository;

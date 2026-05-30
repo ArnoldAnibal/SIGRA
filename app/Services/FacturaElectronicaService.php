@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\FacturaElectronicaRepository;
 use App\Models\Cliente;
 
+// Servicio para gestionar las facturas electrónicas, utilizando el repositorio FacturaElectronicaRepository para realizar las operaciones de acceso a datos. Este servicio proporciona métodos para obtener todas las facturas, encontrar una factura por su ID, crear una nueva factura, actualizar una factura existente y eliminar una factura.
 class FacturaElectronicaService
 {
     protected $repository;

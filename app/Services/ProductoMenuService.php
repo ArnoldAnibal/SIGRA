@@ -28,7 +28,7 @@ class ProductoMenuService
 
     public function create(array $data)
     {
-        // 🔥 ensure imagen always exists key-wise (optional safety)
+        // ensure imagen always exists key-wise (optional safety)
         $data['imagen'] = $data['imagen'] ?? null;
 
         return $this->repository->create($data);

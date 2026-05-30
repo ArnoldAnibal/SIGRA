@@ -14,7 +14,10 @@ use App\Http\Controllers\Api\FacturaElectronicaController;
 use App\Http\Controllers\Api\DetallePedidoController;
 use App\Http\Controllers\Api\AsistenciaController;
 use App\Http\Controllers\Api\PagoController;
-
+use App\Http\Controllers\Api\ProveedorController;
+use App\Http\Controllers\Api\CuentaPorPagarController;
+use App\Http\Controllers\Api\InventarioMovimientoController;
+use App\Http\Controllers\Api\ClienteMetodoPagoController;
 use App\Http\Controllers\Api\Auth\EmpleadoAuthController;
 use App\Http\Controllers\Api\Auth\ClienteAuthController;
 
@@ -112,16 +115,31 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('role:Administrador')->group(function () {
 
-            Route::apiResource(
-                'empleados',
-                EmpleadoController::class
-            );
+    Route::apiResource(
+        'empleados',
+        EmpleadoController::class
+    );
 
-            Route::apiResource(
-                'planillas',
-                PlanillaController::class
-            );
-        });
+    Route::apiResource(
+        'planillas',
+        PlanillaController::class
+    );
+
+    Route::apiResource(
+        'proveedores',
+        ProveedorController::class
+    );
+
+    Route::apiResource(
+        'cuentas-por-pagar',
+        CuentaPorPagarController::class
+    );
+
+    Route::apiResource(
+        'inventario-movimientos',
+        InventarioMovimientoController::class
+    );
+});
 
         /*
         |--------------------------------------------------------------------------
@@ -144,6 +162,11 @@ Route::prefix('v1')->group(function () {
             Route::apiResource(
                 'pagos',
                 PagoController::class
+            );
+
+            Route::apiResource(
+                'cliente-metodos-pago',
+                ClienteMetodoPagoController::class
             );
         });
 

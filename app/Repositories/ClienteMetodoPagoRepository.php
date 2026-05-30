@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\ClienteMetodoPago;
 
+// Repositorio para manejar las operaciones relacionadas con los métodos de pago de los clientes. Este repositorio proporciona métodos para obtener todos los métodos de pago, encontrar un método de pago por su ID, crear un nuevo método de pago, actualizar un método de pago existente y eliminar un método de pago.
+
 class ClienteMetodoPagoRepository
 {
     public function getAll()
